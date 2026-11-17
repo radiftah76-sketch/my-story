@@ -1,110 +1,140 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر قطع غيار السيارات - my-stor</title>
-    <!-- مكتبة التنسيقات Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- مكتبة الأيقونات Font Awesome -->
+    <title>my-stor | منصة قطع غيار السيارات</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#fff7ed', 500: '#f97316', 600: '#ea580c' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Cairo', sans-serif; }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
 
-    <!-- رأس الصفحة -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+    <!-- رأس الصفحة والشعار -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-40 transition-colors">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-amber-500 text-slate-900 p-2.5 rounded-xl font-black text-xl shadow-lg">
-                    <i class="fa-solid fa-car-burst"></i>
-                </div>
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <span class="bg-brand-500 text-white p-2 rounded-xl text-xl shadow-md"><i class="fa-solid fa-car-rear"></i></span>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide">my-stor</h1>
-                    <p class="text-xs text-slate-400">منصة قطع غيار السيارات</p>
+                    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">my-stor</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400" data-lang="subtitle">منصة قطع غيار السيارات</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="openAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl text-sm font-semibold transition border border-slate-700 flex items-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-500"></i>
-                    <span>لوحة التحكم</span>
+
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <!-- زر تبديل اللغة -->
+                <button onclick="toggleLanguage()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium hover:bg-gray-200 transition">
+                    <i class="fa-solid fa-globe ml-1"></i> <span id="lang-btn-text">EN / FR</span>
+                </button>
+                <!-- زر الوضع الليلي -->
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 transition">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline"></i>
+                </button>
+                <!-- زر لوحة التحكم -->
+                <button onclick="openAdminModal()" class="flex items-center space-x-2 space-x-reverse bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-brand-600 transition shadow-sm">
+                    <i class="fa-solid fa-lock text-amber-400"></i>
+                    <span data-lang="admin_btn">لوحة التحكم</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- المحتوى الرئيسي للمتجر -->
-    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
-        
-        <!-- قسم العنوان والقطع المتاحة -->
+    <!-- شريط الفلاتر والبحث حسب الماركات -->
+    <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 shadow-xs py-3 px-4">
+        <div class="max-w-7xl mx-auto flex flex-wrap gap-2 items-center justify-between">
+            <div class="flex flex-wrap gap-2 items-center" id="brand-filters">
+                <button onclick="filterByBrand('all')" class="brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-brand-500 text-white shadow-xs transition" data-brand="all">الكل</button>
+                <button onclick="filterByBrand('Renault')" class="brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition" data-brand="Renault">Renault</button>
+                <button onclick="filterByBrand('Dacia')" class="brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition" data-brand="Dacia">Dacia</button>
+                <button onclick="filterByBrand('Peugeot')" class="brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition" data-brand="Peugeot">Peugeot</button>
+                <button onclick="filterByBrand('Volkswagen')" class="brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition" data-brand="Volkswagen">Volkswagen</button>
+            </div>
+            <div class="w-full md:w-auto">
+                <input type="text" id="search-input" oninput="filterProducts()" placeholder="ابحث عن قطعة غيار..." class="w-full md:w-64 px-4 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:outline-none focus:border-brand-500">
+            </div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي وعرض المنتجات -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-                <span data-i18n="available_parts">القطع المتاحة</span>
-            </h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white" data-lang="available_parts">القطع المتاحة</h2>
+            <span id="product-count" class="text-xs bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-gray-600 dark:text-gray-300">0 منتج</span>
         </div>
 
         <!-- مؤشر التحميل -->
-        <div id="loading-spinner" class="flex justify-center items-center py-20">
-            <div class="animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent"></div>
+        <div id="loading-spinner" class="text-center py-12">
+            <i class="fa-solid fa-spinner fa-spin text-3xl text-brand-500"></i>
+            <p class="text-sm text-gray-500 mt-2">جاري جلب المنتجات من السحابة...</p>
         </div>
 
-        <!-- شبكة عرض المنتجات -->
+        <!-- شبكة المنتجات -->
         <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- سيتم تعبئة المنتجات تلقائياً من قاعدة البيانات -->
+            <!-- سيتم تعبئة المنتجات تلقائياً هنا -->
         </div>
-
     </main>
 
-    <!-- تذييل الصفحة -->
-    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
-            <p>&copy; 2026 my-stor. جميع الحقوق محفوظة.</p>
-        </div>
-    </footer>
-
-    <!-- نافذة لوحة التحكم للإدارة -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-800">إضافة منتج جديد</h3>
-                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+    <!-- نافذة لوحة التحكم لإضافة المنتجات -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-brand-500"></i> إضافة قطعة جديدة
+                </h3>
+                <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-slate-700">اسم القطعة</label>
-                    <input type="text" id="product-name" class="w-full border rounded-xl px-3 py-2 outline-none focus:border-amber-500">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">اسم القطع</label>
+                    <input type="text" id="product-name" placeholder="مثال: مضخة وقود أصلية" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:outline-none focus:border-brand-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-slate-700">النوع / الماركة</label>
-                    <input type="text" id="product-brand" class="w-full border rounded-xl px-3 py-2 outline-none focus:border-amber-500">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">ماركة السيارة</label>
+                    <select id="product-brand" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:outline-none focus:border-brand-500">
+                        <option value="Renault">Renault</option>
+                        <option value="Dacia">Dacia</option>
+                        <option value="Peugeot">Peugeot</option>
+                        <option value="Volkswagen">Volkswagen</option>
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-slate-700">السعر (د.م)</label>
-                    <input type="number" id="product-price" class="w-full border rounded-xl px-3 py-2 outline-none focus:border-amber-500">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">السعر (د.م)</label>
+                    <input type="number" id="product-price" placeholder="500" class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:outline-none focus:border-brand-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-slate-700">صورة القطعة</label>
-                    <input type="file" id="product-image" accept="image/*" class="w-full border rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">صورة القطعة</label>
+                    <input type="file" id="product-image" accept="image/*" class="w-full text-xs text-gray-500 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100">
                 </div>
-                <button id="publish-btn" onclick="submitNewProduct()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 rounded-xl transition shadow-md">
-                    نشر المنتج في المتجر
+                <button id="publish-btn" onclick="submitNewProduct()" class="w-full bg-brand-500 text-white py-2.5 rounded-xl font-medium text-sm hover:bg-brand-600 transition shadow-md">
+                    نشر القطعة في المتجر
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- سكربتات الاتصال بقاعدة البيانات Firebase وعرض المنتجات -->
+    <!-- سكربت الفايربيس ومنطق التشغيل المتكامل -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ضع هنا إعدادات الاتصال الحقيقية الخاصة بمتجرك (Firebase Config)
-     const firebaseConfig = {
-            apiKey: "AIzaSyDOgSv7oK5Ioh-04vJk01UW7HknAPhCCcE",
+        // إعدادات الاتصال الحقيقية بـ Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOgSv7oK5Ioh-O4vJk01UW7HknAPhCCcE",
             authDomain: "my-store-36560.firebaseapp.com",
             projectId: "my-store-36560",
             storageBucket: "my-store-36560.firebasestorage.app",
@@ -115,45 +145,97 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // مجموعة قاعدة البيانات الموحدة والثابتة للمنتجات
         const productsCol = collection(db, "produits");
 
-        // الاستماع الفوري لإضافة أو حذف المنتجات وتحديث الموقع لكل الزوار
-        const q = query(productsCol, orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const spinner = document.getElementById('loading-spinner');
-            if (spinner) spinner.classList.add('hidden');
+        let allProducts = [];
+        let currentFilter = 'all';
 
+        // دالة جلب المنتجات من قاعدة البيانات السحابية
+        async function fetchProducts() {
             const grid = document.getElementById('products-grid');
-            grid.innerHTML = "";
+            const spinner = document.getElementById('loading-spinner');
+            try {
+                const q = query(productsCol, orderBy('createdAt', 'desc'));
+                const snapshot = await getDocs(q);
+                allProducts = [];
+                snapshot.forEach(doc => {
+                    allProducts.push({ id: doc.id, ...doc.data() });
+                });
+                spinner.style.display = 'none';
+                renderProducts(allProducts);
+            } catch (error) {
+                console.error("خطأ في جلب المنتجات:", error);
+                spinner.innerHTML = `<p class="text-red-500 text-sm">حدث خطأ أثناء الاتصال بقاعدة البيانات.</p>`;
+            }
+        }
 
-            if (snapshot.empty) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">لا توجد منتجات مضافة حالياً.</div>`;
+        // دالة عرض المنتجات في الشبكة
+        window.renderProducts = function(products) {
+            const grid = document.getElementById('products-grid');
+            const countTag = document.getElementById('product-count');
+            grid.innerHTML = '';
+            countTag.innerText = `${products.length} منتج`;
+
+            if (products.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">لا توجد قطع غيار متاحة حالياً.</div>`;
                 return;
             }
 
-            snapshot.forEach((docSnap) => {
-                const p = docSnap.data();
+            products.forEach(p => {
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition flex flex-col";
+                card.className = "bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col";
                 card.innerHTML = `
-                    <div class="h-48 bg-slate-100 overflow-hidden relative">
+                    <div class="h-48 bg-gray-100 dark:bg-gray-700 overflow-hidden relative">
                         <img src="${p.image || 'https://via.placeholder.com/300'}" alt="${p.name}" class="w-full h-full object-cover">
+                        <span class="absolute top-3 right-3 bg-white/90 dark:bg-gray-900/90 text-gray-800 dark:text-white text-xs font-medium px-2.5 py-1 rounded-full shadow-xs">${p.brand || 'عام'}</span>
                     </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md w-fit mb-2">${p.brand || 'قطع غيار'}</span>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">${p.name}</h3>
-                        <div class="mt-auto pt-3 flex justify-between items-center border-t border-slate-100">
-                            <span class="text-slate-900 font-extrabold text-lg">${p.price} د.م</span>
+                    <div class="p-4 flex flex-col flex-grow justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900 dark:text-white text-base mb-1">${p.name}</h3>
+                        </div>
+                        <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                            <span class="text-brand-600 dark:text-brand-500 font-bold text-lg">${p.price} د.م</span>
+                            <button onclick="alert('تم اختيار القطعة بنجاح!')" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-brand-500 hover:text-white transition">شراء</button>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
-        });
+        }
 
-        // دوال التحكم بالنافذة
+        // دالة فلترة المنتجات حسب الماركة والبحث
+        window.filterByBrand = function(brand) {
+            currentFilter = brand;
+            document.querySelectorAll('.brand-filter-btn').forEach(btn => {
+                if(btn.dataset.brand === brand) {
+                    btn.className = "brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-brand-500 text-white shadow-xs transition";
+                } else {
+                    btn.className = "brand-filter-btn px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition";
+                }
+            });
+            applyFilters();
+        }
+
+        window.filterProducts = function() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const queryText = document.getElementById('search-input').value.toLowerCase();
+            let filtered = allProducts;
+            
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(p => p.brand === currentFilter);
+            }
+
+            if (queryText.trim() !== '') {
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(queryText));
+            }
+
+            renderProducts(filtered);
+        }
+
+        // دوال نافذة الإدارة (Modal)
         window.openAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('hidden');
         }
@@ -161,16 +243,26 @@
             document.getElementById('admin-modal').classList.add('hidden');
         }
 
-        // دالة إضافة منتج جديد إلى قاعدة البيانات "produits"
+        // دالة تحويل الصور إلى Base64
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // دالة إضافة منتج جديد وقائي وسحابي
         window.submitNewProduct = async function() {
-            const name = document.getElementById('product-name').value;
+            const name = document.getElementById('product-name').value.trim();
             const brand = document.getElementById('product-brand').value;
-            const price = document.getElementById('product-price').value;
+            const price = document.getElementById('product-price').value.trim();
             const fileInput = document.getElementById('product-image');
             const btn = document.getElementById('publish-btn');
 
             if (!name || !price) {
-                alert('المرجو إدخال اسم المنتج والسعر على الأقل.');
+                alert("الرجاء إدخال اسم القطعة والسعر على الأقل.");
                 return;
             }
 
@@ -180,42 +272,61 @@
             try {
                 let imageUrl = "";
                 if (fileInput.files && fileInput.files[0]) {
-                    const file = fileInput.files[0];
-                    imageUrl = await toBase64(file);
+                    imageUrl = await toBase64(fileInput.files[0]);
                 }
 
                 await addDoc(productsCol, {
-                    name,
-                    brand,
+                    name: name,
+                    brand: brand,
                     price: Number(price),
                     image: imageUrl,
-                    createdAt: Date.now()
+                    createdAt: new Date()
                 });
 
+                alert("تم نشر القطعة بنجاح في المتجر!");
                 closeAdminModal();
-                // إعادة تفريغ الحقول
-                document.getElementById('product-name').value = "";
-                document.getElementById('product-brand').value = "";
-                document.getElementById('product-price').value = "";
-                fileInput.value = "";
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-price').value = '';
+                fileInput.value = '';
+                fetchProducts();
             } catch (error) {
-                console.error("خطأ أثناء الإضافة:", error);
-                alert("حدث خطأ أثناء رفع المنتج.");
+                console.error("خطأ أثناء النشر:", error);
+                alert("حدث خطأ أثناء رفع المنتج، تأكد من الاتصال.");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "نشر المنتج في المتجر";
+                btn.innerText = "نشر القطعة في المتجر";
             }
-        };
-
-        // مساعدة لتحويل الصورة إلى Base64
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
         }
+
+        // نظام الوضع الليلي (Dark Mode)
+        window.toggleDarkMode = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // نظام الترجمة البسيطة المتعددة
+        let currentLang = 'ar';
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : (currentLang === 'en' ? 'fr' : 'ar');
+            const translations = {
+                ar: { subtitle: "منصة قطع غيار السيارات", admin_btn: "لوحة التحكم", available_parts: "القطع المتاحة" },
+                en: { subtitle: "Auto Spare Parts Platform", admin_btn: "Admin Panel", available_parts: "Available Parts" },
+                fr: { subtitle: "Plateforme de Pièces Auto", admin_btn: "Administration", available_parts: "Pièces Disponibles" }
+            };
+            document.querySelector('[data-lang="subtitle"]').innerText = translations[currentLang].subtitle;
+            document.querySelector('[data-lang="admin_btn"]').innerText = translations[currentLang].admin_btn;
+            document.querySelector('[data-lang="available_parts"]').innerText = translations[currentLang].available_parts;
+            document.getElementById('lang-btn-text').innerText = currentLang.toUpperCase();
+        }
+
+        // تحميل المنتجات عند فتح الصفحة
+        fetchProducts();
     </script>
 </body>
 </html>
