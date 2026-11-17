@@ -141,7 +141,7 @@
             <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-6">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
             
             <div class="relative max-w-xl mx-auto mb-6">
-                <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="ابحث عن قطعة غيار (مثال: مكابح، فيلتر، LED...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
+                <input type="text" id="search-input" onkeyup="filterproduits()" placeholder="ابحث عن قطعة غيار (مثال: مكابح، فيلتر، LED...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
                 <i id="search-icon" class="fa-solid fa-magnifying-glass absolute top-4 right-4 text-slate-400 text-lg"></i>
             </div>
 
@@ -331,7 +331,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const productsCol = collection(db, "products");
+        const productsCol = collection(db, "produits");
         const ordersCol = collection(db, "orders");
 
         // الاستماع الفوري لأي إضافة أو حذف في المنتجات وتحديث الموقع لكل الزوار
