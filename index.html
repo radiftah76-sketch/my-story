@@ -419,7 +419,7 @@
                 return;
             }
             try {
-                await deleteDoc(doc(db, "products", id));
+                await deleteDoc(doc(db, "produits", id));
             } catch (err) {
                 alert("حدث خطأ أثناء الحذف: " + err.message);
             }
