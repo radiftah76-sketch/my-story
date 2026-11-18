@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipements Automobiles | المتجر الاحترافي لقطع غيار السيارات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'Segoe UI', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; scroll-behavior: smooth; }
+        .glass-header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        .brand-btn.active {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
+            transform: translateY(-2px);
+        }
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
+
+    <!-- رأس الصفحة العصري -->
+    <header class="glass-header text-white shadow-xl sticky top-0 z-50 border-b border-slate-800">
+        <div class="container mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <button onclick="openSideMenu()" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 text-white p-2.5 rounded-xl transition shadow-md" title="القائمة وحسابي">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+
+                <div class="flex items-center gap-2.5 cursor-pointer" onclick="resetFilters()">
+                    <div class="bg-amber-500 text-slate-950 p-2 rounded-xl shadow-md">
+                        <i class="fa-solid fa-car-rear text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg md:text-xl font-black tracking-tight block leading-none">Equipements <span class="text-amber-400">Auto</span></span>
+                        <span class="text-[10px] text-slate-400 tracking-widest uppercase">Maroc Store</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center flex-wrap gap-2">
+                <select id="lang-switcher" onchange="changeLanguage(this.value)" class="bg-slate-800 text-white border border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold focus:outline-none focus:border-amber-500 cursor-pointer">
+                    <option value="ar">🇲🇦 العربية</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+
+                <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 p-2 rounded-xl transition" title="المظهر">
+                    <i id="theme-icon" class="fa-solid fa-moon text-base"></i>
+                </button>
+
+                <button onclick="openTrackModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-truck-fast text-amber-400"></i>
+                    <span class="hidden md:inline" data-i18n="track_btn">تتبع الطلب</span>
+                </button>
+
+                <button onclick="openCustomerModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-2 px-3 rounded-xl text-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-user text-amber-400"></i>
+                    <span id="header-user-name" class="hidden sm:inline" data-i18n="login_btn">حسابي</span>
+                </button>
+
+                <button onclick="openAdminModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-2 px-3 rounded-xl text-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span class="hidden sm:inline" data-i18n="admin_btn">المالك</span>
+                </button>
+
+                <button onclick="openCartModal()" class="relative bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2 rounded-xl transition">
+                    <i class="fa-solid fa-bag-shopping text-base text-amber-400"></i>
+                    <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-amber-500 text-slate-950 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- القائمة الجانبية -->
+    <div id="side-menu-overlay" onclick="closeSideMenu()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"></div>
+    <aside id="side-menu-drawer" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white dark:bg-slate-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between border-l dark:border-slate-800">
+        <div class="p-5 overflow-y-auto flex-1">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-5">
+                <span class="font-black text-lg text-amber-500 flex items-center gap-2">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span data-i18n="sidebar_title">ملفي الشخصي ومشترياتي</span>
+                </span>
+                <button onclick="closeSideMenu()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="sidebar-user-card" class="bg-slate-100 dark:bg-slate-800/80 p-4 rounded-2xl mb-6 border dark:border-slate-700"></div>
+
+            <div>
+                <h4 class="font-extrabold text-sm mb-3 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> <span data-i18n="my_orders_title">مشترياتي السابقة</span></span>
+                    <span id="orders-history-count" class="bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </h4>
+                <div id="orders-history-list" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <div class="p-4 border-t dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50">
+            <a href="https://wa.me/212674247257" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span data-i18n="support_wa">تواصل مع خدمة الزبائن</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- الواجهة الرئيسية -->
+    <section class="bg-slate-900 text-white py-12 md:py-16 text-center px-4 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto relative z-10">
+            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">قطع غيار ومعدات السيارات الأصلية في المغرب</h1>
+            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-6">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
+            
+            <div class="relative max-w-xl mx-auto mb-6">
+                <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="ابحث عن قطعة غيار (مثال: مكابح، فيلتر، LED...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
+                <i id="search-icon" class="fa-solid fa-magnifying-glass absolute top-4 right-4 text-slate-400 text-lg"></i>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3">
+                <a href="#brands-section" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
+                <button onclick="openCompareModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition">
+                    <span data-i18n="compare_btn">مقارنة القطع</span> (<span id="compare-count">0</span>)
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ماركات السيارات (التي عند الضغط عليها تظهر قطعها الخاصة) -->
+    <section id="brands-section" class="container mx-auto px-4 pt-8 pb-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-car text-amber-500"></i>
+                <span data-i18n="brands_title">اختر ماركة سيارتك:</span>
+            </h2>
+            <button onclick="resetFilters()" data-i18n="show_all" class="text-xs md:text-sm text-amber-600 dark:text-amber-400 font-bold hover:underline">عرض الكل</button>
+        </div>
+        <div id="brands-container" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2.5"></div>
+    </section>
+
+    <!-- لوحة تحكم المالك -->
+    <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
+        <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
+                <h2 class="text-lg font-black text-amber-500" data-i18n="admin_panel_title">لوحة تحكم المالك - إضافة منتج جديد</h2>
+                <button onclick="logoutAdmin()" class="bg-rose-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold" data-i18n="logout">خروج</button>
+            </div>
+
+            <form onsubmit="addNewProduct(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1">اسم القطعة:</label>
+                    <input type="text" id="prod-name" placeholder="مثال: مكابح أمامية" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">ماركة السيارة:</label>
+                    <select id="prod-brand" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                        <option value="all">عام / جميع السيارات (Universel)</option>
+                        <option value="Dacia">Dacia</option>
+                        <option value="Renault">Renault</option>
+                        <option value="Peugeot">Peugeot</option>
+                        <option value="Citroen">Citroën</option>
+                        <option value="Volkswagen">Volkswagen</option>
+                        <option value="Hyundai">Hyundai</option>
+                        <option value="Fiat">Fiat</option>
+                        <option value="Mercedes">Mercedes</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">السعر (بالدرهم):</label>
+                    <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">صورة المنتج:</label>
+                    <input type="file" id="prod-image" accept="image/*" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold mb-1">الوصف:</label>
+                    <input type="text" id="prod-desc" placeholder="تفاصيل القطعة..." required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" id="publish-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition">نشر المنتج في المتجر (سحابياً)</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- قائمة المنتجات -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold" data-i18n="available_parts">القطع المتاحة</h2>
+            <span id="results-count" class="text-sm text-slate-500 font-bold"></span>
+        </div>
+
+        <div id="loading-spinner" class="text-center py-12">
+            <i class="fa-solid fa-spinner fa-spin text-3xl text-amber-500"></i>
+            <p class="text-sm text-slate-500 mt-2">جاري جلب المنتجات من سحابة Firebase...</p>
+        </div>
+
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <div id="no-results" class="hidden text-center py-12 bg-white dark:bg-slate-900 rounded-2xl shadow">
+            <i class="fa-solid fa-box-open text-4xl text-slate-400 mb-3"></i>
+            <p class="text-base font-bold" data-i18n="no_results_msg">لم نجد قطعاً مطابقة لبحثك.</p>
+        </div>
+    </main>
+
+    <!-- النوافذ المنبثقة (السلة، المقارنة، التتبع، الحساب، الإدارة) -->
+    <div id="cart-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl relative border dark:border-slate-800">
+            <button onclick="closeCartModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-bag-shopping text-amber-500"></i><span data-i18n="cart_title">سلة المشتريات</span></h3>
+            <div id="cart-items-list" class="max-h-60 overflow-y-auto space-y-3 mb-4 border-y dark:border-slate-800 py-3"></div>
+            <div class="flex justify-between items-center text-base font-bold mb-4"><span data-i18n="total_lbl">المجموع:</span><span id="cart-total-price" class="text-amber-500">0 DH</span></div>
+            <button onclick="checkoutViaWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold mb-2 flex items-center justify-center gap-2 shadow"><i class="fa-brands fa-whatsapp text-lg"></i><span data-i18n="checkout_wa">إرسال الطلب عبر واتساب</span></button>
+            <button onclick="clearCart()" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-500 py-2 rounded-xl text-xs font-bold" data-i18n="clear_cart">إفراغ السلة</button>
+        </div>
+    </div>
+
+    <div id="compare-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative border dark:border-slate-800">
+            <button onclick="closeCompareModal()" class="absolute top-4 left-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-4">مقارنة المنتجات</h3>
+            <div id="compare-content" class="overflow-x-auto"></div>
+        </div>
+    </div>
+
+    <div id="track-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl relative border dark:border-slate-800">
+            <button onclick="closeTrackModal()" class="absolute top-4 left-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-2">تتبع حالة الطلب</h3>
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="track-input" placeholder="رقم الطلب (مثال: ORD-1234)" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <button onclick="checkOrderStatus()" class="bg-amber-500 text-slate-950 font-bold px-4 rounded-xl text-sm">بحث</button>
+            </div>
+            <div id="track-result" class="hidden bg-slate-100 dark:bg-slate-800 p-3 rounded-xl text-xs"></div>
+        </div>
+    </div>
+
+    <div id="customer-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative border dark:border-slate-800">
+            <button onclick="closeCustomerModal()" class="absolute top-4 left-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="flex border-b dark:border-slate-800 mb-4">
+                <button onclick="switchAuthTab('login')" id="tab-login" class="w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm">دخول</button>
+                <button onclick="switchAuthTab('register')" id="tab-register" class="w-1/2 py-2 font-bold text-slate-400 text-sm">حساب جديد</button>
+            </div>
+            <form id="login-form" onsubmit="handleCustomerLogin(event)" class="space-y-3">
+                <input type="email" id="login-email" placeholder="البريد الإلكتروني" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="password" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm">دخول</button>
+            </form>
+            <form id="register-form" onsubmit="handleCustomerRegister(event)" class="hidden space-y-3">
+                <input type="text" id="reg-name" placeholder="الاسم الكامل" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="email" id="reg-email" placeholder="البريد الإلكتروني" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="password" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <button type="submit" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-sm">إنشاء الحساب</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative border dark:border-slate-800">
+            <button onclick="closeAdminModal()" class="absolute top-4 left-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-3">تسجيل دخول المالك</h3>
+            <form onsubmit="verifyAdmin(event)" class="space-y-3">
+                <input type="password" id="admin-pass" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm">دخول</button>
+            </form>
+        </div>
+    </div>
+
+    <a href="https://wa.me/212674247257" target="_blank" class="fixed bottom-5 left-5 bg-emerald-500 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl z-40 transition transform hover:scale-110">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs mt-12 border-t border-slate-800">
+        <p>© 2026 Equipements Automobiles - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <!-- سكربت Firebase المتكامل وجافاسكربت التشغيل -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOgSv7oK5Ioh-O4vJk01UW7HknAPhCCcE",
+            authDomain: "my-store-36560.firebaseapp.com",
+            projectId: "my-store-36560",
+            storageBucket: "my-store-36560.firebasestorage.app",
+            messagingSenderId: "203056979017",
+            appId: "1:203056979017:web:3519a99e971ad2dd947398",
+            measurementId: "G-QRTDCSLDLB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const productsCol = collection(db, "produits");
+
+        const MY_WHATSAPP = "212674247257";
+        let cartItems = [];
+        let compareList = [];
+        let isAdmin = false;
+        let selectedBrand = "all";
+        let currentLang = "ar";
+        let products = [];
+
+        let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
+        let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
+
+        const translations = {
+            ar: {
+                track_btn: "تتبع الطلب", login_btn: "حسابي", admin_btn: "المالك",
+                hero_title: "قطع غيار ومعدات السيارات الأصلية في المغرب",
+                hero_subtitle: "ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.",
+                browse_btn: "تصفح حسب السيارة", compare_btn: "مقارنة القطع",
+                brands_title: "اختر ماركة سيارتك:", show_all: "عرض الكل", all_brands: "الكل",
+                available_parts: "القطع المتاحة", order_wa: "اطلب عبر واتساب", add_cart: "أضف للسلة",
+                no_results_msg: "لم نجد قطعاً مطابقة لبحثك.", cart_title: "سلة المشتريات",
+                total_lbl: "المجموع:", checkout_wa: "إرسال الطلب عبر واتساب", clear_cart: "إفراغ السلة",
+                admin_panel_title: "لوحة تحكم المالك", logout: "خروج",
+                sidebar_title: "ملفي الشخصي ومشترياتي", my_orders_title: "مشترياتي السابقة", support_wa: "تواصل مع خدمة الزبائن"
+            },
+            fr: {
+                track_btn: "Suivi", login_btn: "Compte", admin_btn: "Admin",
+                hero_title: "Pièces et équipements auto d'origine au Maroc",
+                hero_subtitle: "Recherchez votre pièce et commandez directement sur WhatsApp.",
+                browse_btn: "Choisir ma voiture", compare_btn: "Comparer",
+                brands_title: "Choisissez votre marque :", show_all: "Tout voir", all_brands: "Toutes",
+                available_parts: "Pièces disponibles", order_wa: "Commander", add_cart: "Ajouter",
+                no_results_msg: "Aucune pièce trouvée.", cart_title: "Panier",
+                total_lbl: "Total :", checkout_wa: "Commander sur WhatsApp", clear_cart: "Vider le panier",
+                admin_panel_title: "Administration", logout: "Déconnexion",
+                sidebar_title: "Mon Profil & Achats", my_orders_title: "Mes commandes passées", support_wa: "Service Client WhatsApp"
+            },
+            en: {
+                track_btn: "Track", login_btn: "Account", admin_btn: "Admin",
+                hero_title: "Original Car Parts & Equipment in Morocco",
+                hero_subtitle: "Search for the part you need and order directly via WhatsApp.",
+                browse_btn: "Select Car", compare_btn: "Compare",
+                brands_title: "Browse Car Brand:", show_all: "Show All", all_brands: "All",
+                available_parts: "Available Parts", order_wa: "Order via WhatsApp", add_cart: "Add to Cart",
+                no_results_msg: "No matching parts found.", cart_title: "Shopping Cart",
+                total_lbl: "Total:", checkout_wa: "Send via WhatsApp", clear_cart: "Clear Cart",
+                admin_panel_title: "Admin Panel", logout: "Logout",
+                sidebar_title: "My Profile & Orders", my_orders_title: "My Previous Orders", support_wa: "Customer Support"
+            }
+        };
+
+        const carBrands = [
+            { id: "all", name: "الكل", logo: "https://cdn-icons-png.flaticon.com/512/3202/3202926.png" },
+            { id: "Dacia", name: "Dacia", logo: "https://www.carlogos.org/car-logos/dacia-logo.png" },
+            { id: "Renault", name: "Renault", logo: "https://www.carlogos.org/car-logos/renault-logo.png" },
+            { id: "Peugeot", name: "Peugeot", logo: "https://www.carlogos.org/car-logos/peugeot-logo.png" },
+            { id: "Citroen", name: "Citroën", logo: "https://www.carlogos.org/car-logos/citroen-logo.png" },
+            { id: "Volkswagen", name: "VW", logo: "https://www.carlogos.org/car-logos/volkswagen-logo.png" },
+            { id: "Hyundai", name: "Hyundai", logo: "https://www.carlogos.org/car-logos/hyundai-logo.png" },
+            { id: "Fiat", name: "Fiat", logo: "https://www.carlogos.org/car-logos/fiat-logo.png" },
+            { id: "Mercedes", name: "Mercedes", logo: "https://www.carlogos.org/car-logos/mercedes-benz-logo.png" }
+        ];
+
+        async function fetchProductsFromCloud() {
+            const spinner = document.getElementById('loading-spinner');
+            try {
+                const q = query(productsCol, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                products = [];
+                querySnapshot.forEach((docSnap) => {
+                    products.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                spinner.style.display = 'none';
+                filterProducts();
+            } catch (error) {
+                console.error("خطأ في جلب المنتجات:", error);
+                spinner.innerHTML = `<p class="text-red-500 text-sm">حدث خطأ في الاتصال بقاعدة البيانات السحابية.</p>`;
+            }
+        }
+
+        window.openSideMenu = function() {
+            renderSidebarContent();
+            document.getElementById('side-menu-overlay').classList.remove('hidden');
+            const drawer = document.getElementById('side-menu-drawer');
+            drawer.classList.remove('translate-x-full', '-translate-x-full');
+        }
+
+        window.closeSideMenu = function() {
+            document.getElementById('side-menu-overlay').classList.add('hidden');
+            const drawer = document.getElementById('side-menu-drawer');
+            if (currentLang === 'ar') {
+                drawer.classList.add('translate-x-full');
+            } else {
+                drawer.classList.add('-translate-x-full');
+            }
+        }
+
+        function renderSidebarContent() {
+            const userCard = document.getElementById('sidebar-user-card');
+            const headerName = document.getElementById('header-user-name');
+
+            if (currentUser) {
+                headerName.innerText = currentUser.name.split(' ')[0];
+                userCard.innerHTML = `
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-full bg-amber-500 text-slate-950 font-black flex items-center justify-center text-lg">
+                            ${currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-sm truncate">${currentUser.name}</p>
+                            <p class="text-xs text-slate-500 truncate">${currentUser.email}</p>
+                        </div>
+                    </div>
+                    <button onclick="logoutCustomer()" class="w-full bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 font-bold py-1.5 rounded-xl text-xs transition">
+                        <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+                    </button>
+                `;
+            } else {
+                headerName.innerText = translations[currentLang].login_btn;
+                userCard.innerHTML = `
+                    <p class="text-xs text-slate-500 mb-3">سجل دخولك لحفظ معلوماتك ومتابعة مشترياتك بسهولة.</p>
+                    <button onclick="closeSideMenu(); openCustomerModal();" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 rounded-xl text-xs transition">
+                        تسجيل الدخول / إنشاء حساب
+                    </button>
+                `;
+            }
+
+            const ordersList = document.getElementById('orders-history-list');
+            document.getElementById('orders-history-count').innerText = orderHistory.length;
+
+            if (orderHistory.length === 0) {
+                ordersList.innerHTML = `<div class="text-center py-6 bg-slate-50 dark:bg-slate-800/40 rounded-xl text-xs text-slate-400">لا توجد مشتريات مسجلة بعد.</div>`;
+            } else {
+                ordersList.innerHTML = orderHistory.map(ord => `
+                    <div class="bg-slate-50 dark:bg-slate-800/70 p-3 rounded-xl border dark:border-slate-700 text-xs">
+                        <div class="flex justify-between items-center font-bold mb-1">
+                            <span class="text-amber-500">#${ord.id}</span>
+                            <span class="text-[10px] text-slate-400">${ord.date}</span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 line-clamp-2 mb-1.5">${ord.items}</p>
+                        <div class="flex justify-between items-center pt-1.5 border-t dark:border-slate-700">
+                            <span class="font-black">${ord.total} DH</span>
+                            <span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[10px] font-bold">تم الإرسال</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function saveOrderToHistory(itemsSummary, totalAmount) {
+            const newOrder = {
+                id: "ORD-" + Math.floor(1000 + Math.random() * 9000),
+                date: new Date().toLocaleDateString('ar-MA'),
+                items: itemsSummary,
+                total: totalAmount
+            };
+            orderHistory.unshift(newOrder);
+            localStorage.setItem('auto_order_history', JSON.stringify(orderHistory));
+            return newOrder.id;
+        }
+
+        window.toggleDarkMode = function() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('theme-icon').className = isDark ? "fa-solid fa-sun text-base" : "fa-solid fa-moon text-base";
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = "fa-solid fa-sun text-base";
+        }
+
+        window.changeLanguage = function(lang) {
+            currentLang = lang;
+            const isRtl = lang === 'ar';
+            document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', lang);
+
+            const drawer = document.getElementById('side-menu-drawer');
+            if (isRtl) {
+                drawer.classList.remove('left-0', '-translate-x-full', 'border-r');
+                drawer.classList.add('right-0', 'translate-x-full', 'border-l');
+            } else {
+                drawer.classList.remove('right-0', 'translate-x-full', 'border-l');
+                drawer.classList.add('left-0', '-translate-x-full', 'border-r');
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.innerText = translations[lang][key];
+            });
+            renderSidebarContent();
+            renderBrands();
+            filterProducts();
+        }
+
+        function renderBrands() {
+            const container = document.getElementById('brands-container');
+            container.innerHTML = carBrands.map(b => {
+                const isActive = selectedBrand === b.id ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-800';
+                const label = b.id === 'all' ? translations[currentLang].all_brands : b.name;
+                return `
+                    <button onclick="selectBrand('${b.id}')" class="brand-btn ${isActive} bg-white dark:bg-slate-900 border rounded-2xl p-2.5 flex flex-col items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
+                        <img src="${b.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" class="w-8 h-8 object-contain">
+                        <span class="text-xs font-bold">${label}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        window.selectBrand = function(id) { selectedBrand = id; renderBrands(); filterProducts(); }
+        window.resetFilters = function() { selectedBrand = "all"; document.getElementById('search-input').value = ""; renderBrands(); filterProducts(); }
+
+        window.filterProducts = function() {
+            const queryText = document.getElementById('search-input').value.toLowerCase().trim();
+            const filtered = products.filter(p => {
+                const matchBrand = (selectedBrand === 'all') || (p.brand === selectedBrand) || (p.brand === 'all');
+                const matchSearch = p.name.toLowerCase().includes(queryText) || (p.desc && p.desc.toLowerCase().includes(queryText));
+                return matchBrand && matchSearch;
+            });
+            renderProductsList(filtered);
+        }
+
+        function renderProductsList(list) {
+            const grid = document.getElementById('products-grid');
+            const noResults = document.getElementById('no-results');
+            document.getElementById('results-count').innerText = `(${list.length})`;
+            grid.innerHTML = '';
+
+            if (list.length === 0) { noResults.classList.remove('hidden'); return; }
+            noResults.classList.add('hidden');
+
+            list.forEach(p => {
+                const isComp = compareList.includes(p.id);
+                const deleteBtn = isAdmin ? `<button onclick="deleteProduct('${p.id}')" class="w-full bg-rose-500/10 text-rose-500 font-bold py-2 rounded-xl text-xs mt-2"><i class="fa-solid fa-trash"></i> حذف من السحابة</button>` : '';
+
+                grid.innerHTML += `
+                    <div class="product-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm">
+                        <div>
+                            <div class="relative">
+                                <img src="${p.image || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover">
+                                <button onclick="toggleCompare('${p.id}')" class="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 w-8 h-8 rounded-full shadow flex items-center justify-center">
+                                    <i class="fa-solid fa-code-compare ${isComp ? 'text-amber-500' : 'text-slate-400'} text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="p-4">
+                                <span class="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">${p.brand || 'عام'}</span>
+                                <h3 class="text-base font-bold mt-1 mb-1">${p.name}</h3>
+                                <p class="text-slate-500 text-xs mb-3">${p.desc || ''}</p>
+                                <div class="text-lg font-black text-slate-900 dark:text-white">${p.price} DH</div>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 space-y-2">
+                            <button onclick="quickWhatsAppOrder('${p.name.replace(/'/g, "\\'")}', ${p.price})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                                <i class="fa-brands fa-whatsapp"></i><span>${translations[currentLang].order_wa}</span>
+                            </button>
+                            <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', ${p.price})" class="w-full bg-slate-900 dark:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">
+                                <i class="fa-solid fa-cart-plus"></i> <span>${translations[currentLang].add_cart}</span>
+                            </button>
+                            ${deleteBtn}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.quickWhatsAppOrder = function(name, price) {
+            const ordId = saveOrderToHistory(name, price);
+            window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(`طلب جديد (${ordId}):\n- القطعة: ${name}\n- السعر: ${price} DH`)}`, '_blank');
+        }
+
+        window.addToCart = function(name, price) {
+            cartItems.push({name, price});
+            document.getElementById('cart-count').innerText = cartItems.length;
+            alert('تمت إضافة المنتج إلى السلة!');
+        }
+
+        window.openCartModal = function() {
+            const list = document.getElementById('cart-items-list');
+            let total = 0;
+            list.innerHTML = cartItems.length ? cartItems.map((it, i) => {
+                total += Number(it.price);
+                return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl"><div><p class="font-bold text-xs">${it.name}</p><p class="text-xs text-amber-500">${it.price} DH</p></div><button onclick="cartItems.splice(${i},1);openCartModal();document.getElementById('cart-count').innerText=cartItems.length;" class="text-rose-500"><i class="fa-solid fa-trash"></i></button></div>`;
+            }).join('') : '<p class="text-center text-slate-400 py-4 text-xs">السلة فارغة</p>';
+            document.getElementById('cart-total-price').innerText = total + ' DH';
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        window.closeCartModal = function() { document.getElementById('cart-modal').classList.add('hidden'); }
+        window.clearCart = function() { cartItems = []; document.getElementById('cart-count').innerText = 0; openCartModal(); }
+        
+        window.checkoutViaWhatsApp = function() {
+            if (!cartItems.length) return;
+            let total = 0;
+            const summary = cartItems.map(it => it.name).join(' + ');
+            let text = cartItems.map((it, i) => { total += Number(it.price); return `${i+1}. ${it.name} (${it.price} DH)`; }).join('\n');
+            const ordId = saveOrderToHistory(summary, total);
+            window.open(`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(`طلب جديد (${ordId}):\n\n${text}\n\nالمجموع: ${total} DH`)}`, '_blank');
+        }
+
+        window.toggleCompare = function(id) {
+            if (compareList.includes(id)) compareList = compareList.filter(x => x !== id);
+            else { if (compareList.length >= 2) compareList.shift(); compareList.push(id); }
+            document.getElementById('compare-count').innerText = compareList.length;
+            filterProducts();
+        }
+
+        window.openCompareModal = function() {
+            const items = products.filter(p => compareList.includes(p.id));
+            const content = document.getElementById('compare-content');
+            if (items.length < 2) {
+                content.innerHTML = '<p class="text-center text-slate-400 py-4 text-xs">اختر منتجين للمقارنة بينهما.</p>';
+            } else {
+                content.innerHTML = `
+                    <table class="w-full text-xs text-right border-collapse">
+                        <tr class="border-b dark:border-slate-800"><th class="p-2">الخاصية</th><th class="p-2">${items[0].name}</th><th class="p-2">${items[1].name}</th></tr>
+                        <tr class="border-b dark:border-slate-800"><td class="text-slate-400 p-2">السعر</td><td class="p-2 font-bold text-amber-500">${items[0].price} DH</td><td class="p-2 font-bold text-amber-500">${items[1].price} DH</td></tr>
+                    </table>
+                `;
+            }
+            document.getElementById('compare-modal').classList.remove('hidden');
+        }
+
+        window.closeCompareModal = function() { document.getElementById('compare-modal').classList.add('hidden'); }
+
+        window.openTrackModal = function() { document.getElementById('track-modal').classList.remove('hidden'); }
+        window.closeTrackModal = function() { document.getElementById('track-modal').classList.add('hidden'); }
+        window.checkOrderStatus = function() {
+            const val = document.getElementById('track-input').value.trim();
+            const res = document.getElementById('track-result');
+            if (!val) return;
+            res.classList.remove('hidden');
+            res.innerHTML = `الطلب #${val} قيد التوصيل في أسرع وقت.`;
+        }
+
+        window.openCustomerModal = function() { document.getElementById('customer-modal').classList.remove('hidden'); }
+        window.closeCustomerModal = function() { document.getElementById('customer-modal').classList.add('hidden'); }
+        window.switchAuthTab = function(t) {
+            document.getElementById('login-form').classList.toggle('hidden', t !== 'login');
+            document.getElementById('register-form').classList.toggle('hidden', t === 'login');
+            document.getElementById('tab-login').className = t === 'login' ? "w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm" : "w-1/2 py-2 font-bold text-slate-400 text-sm";
+            document.getElementById('tab-register').className = t !== 'login' ? "w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm" : "w-1/2 py-2 font-bold text-slate-400 text-sm";
+        }
+        window.handleCustomerLogin = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            currentUser = { name: email.split('@')[0], email: email };
+            localStorage.setItem('auto_current_user', JSON.stringify(currentUser));
+            renderSidebarContent();
+            alert('مرحباً بك في حسابك!');
+            closeCustomerModal();
+        }
+        window.handleCustomerRegister = function(e) {
+            e.preventDefault();
+            currentUser = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value
+            };
+            localStorage.setItem('auto_current_user', JSON.stringify(currentUser));
+            renderSidebarContent();
+            alert('تم إنشاء حسابك وحفظه بنجاح!');
+            closeCustomerModal();
+        }
+        window.logoutCustomer = function() {
+            currentUser = null;
+            localStorage.removeItem('auto_current_user');
+            renderSidebarContent();
+        }
+
+        window.openAdminModal = function() { isAdmin ? document.getElementById('admin-panel').scrollIntoView({behavior:'smooth'}) : document.getElementById('admin-modal').classList.remove('hidden'); }
+        window.closeAdminModal = function() { document.getElementById('admin-modal').classList.add('hidden'); }
+        window.verifyAdmin = function(e) {
+            e.preventDefault();
+            if (document.getElementById('admin-pass').value === 'Mahmoud123mas@2002#') {
+                isAdmin = true; closeAdminModal(); document.getElementById('admin-panel').classList.remove('hidden'); filterProducts();
+            } else { alert('كلمة المرور غير صحيحة!'); }
+        }
+        window.logoutAdmin = function() { isAdmin = false; document.getElementById('admin-panel').classList.add('hidden'); filterProducts(); }
+
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        window.addNewProduct = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('publish-btn');
+            btn.disabled = true;
+            btn.innerText = "جاري النشر في سحابة Firebase...";
+
+            try {
+                const fileInput = document.getElementById('prod-image');
+                let imageUrl = "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80";
+                
+                if (fileInput.files && fileInput.files[0]) {
+                    imageUrl = await convertFileToBase64(fileInput.files[0]);
+                }
+
+                const newProductData = {
+                    name: document.getElementById('prod-name').value,
+                    brand: document.getElementById('prod-brand').value,
+                    price: Number(document.getElementById('prod-price').value),
+                    desc: document.getElementById('prod-desc').value,
+                    image: imageUrl,
+                    createdAt: new Date()
+                };
+
+                await addDoc(productsCol, newProductData);
+                alert('تم نشر المنتج في سحابة Firebase بنجاح!');
+                e.target.reset();
+                fetchProductsFromCloud();
+            } catch (error) {
+                console.error("خطأ أثناء النشر:", error);
+                alert("حدث خطأ أثناء رفع المنتج للسحابة.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "نشر المنتج في المتجر (سحابياً)";
+            }
+        }
+
+        window.deleteProduct = async function(id) {
+            if (confirm('هل تريد حذف هذا المنتج من السحابة؟')) {
+                try {
+                    await deleteDoc(doc(db, "produits", id));
+                    alert('تم الحذف بنجاح!');
+                    fetchProductsFromCloud();
+                } catch (error) {
+                    console.error("خطأ في الحذف:", error);
+                    alert("تعذر حذف المنتج.");
+                }
+            }
+        }
+
+        renderSidebarContent();
+        renderBrands();
+        fetchProductsFromCloud();
+    </script>
+</body>
+</html>
