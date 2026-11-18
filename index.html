@@ -81,8 +81,6 @@
                     <span id="header-user-name" class="hidden sm:inline" data-i18n="login_btn">حسابي</span>
                 </button>
 
-                <!-- تم إخفاء زر المالك من هنا لكي لا يظهر للزبائن -->
-
                 <button onclick="openCartModal()" class="relative bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2 rounded-xl transition">
                     <i class="fa-solid fa-bag-shopping text-base text-amber-400"></i>
                     <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-amber-500 text-slate-950 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
@@ -156,7 +154,7 @@
         <div id="brands-container" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2.5"></div>
     </section>
 
-    <!-- لوحة تحكم المالك (تفتح فقط عبر الرابط السري) -->
+    <!-- لوحة تحكم المالك (محمية ومقيدة بربط المصادقة) -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
         <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
@@ -222,7 +220,7 @@
         </div>
     </main>
 
-    <!-- النوافذ المنبثقة (السلة، المقارنة، التتبع، الحساب، الإدارة) -->
+    <!-- النوافذ المنبثقة -->
     <div id="cart-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl relative border dark:border-slate-800">
             <button onclick="closeCartModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -275,13 +273,16 @@
         </div>
     </div>
 
+    <!-- نافذة تسجيل دخول المالك الرسمية عبر Firebase Authentication -->
     <div id="admin-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative border dark:border-slate-800">
             <button onclick="closeAdminModal()" class="absolute top-4 left-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h3 class="text-lg font-bold mb-3">تسجيل دخول المالك</h3>
+            <h3 class="text-lg font-bold mb-3 text-amber-500">تسجيل دخول المالك (Firebase Auth)</h3>
+            <p class="text-xs text-slate-400 mb-4">أدخل بريدك الإلكتروني وكلمة المرور الرسمية الخاصة بلوحة تحكم فايربيس.</p>
             <form onsubmit="verifyAdmin(event)" class="space-y-3">
+                <input type="email" id="admin-email" placeholder="البريد الإلكتروني للمالك" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <input type="password" id="admin-pass" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
-                <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm">دخول</button>
+                <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm">تسجيل الدخول الآمن</button>
             </form>
         </div>
     </div>
@@ -294,10 +295,11 @@
         <p>© 2026 Equipements Automobiles - جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- سكربت Firebase المتكامل وجافاسكربت التشغيل -->
+    <!-- سكربت Firebase المتكامل وجافاسكربت التشغيل مع نظام المصادقة الحقيقي -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOgSv7oK5Ioh-O4vJk01UW7HknAPhCCcE",
@@ -311,6 +313,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
         const productsCol = collection(db, "produits");
 
         const MY_WHATSAPP = "212674247257";
@@ -323,6 +326,19 @@
 
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
+
+        // مراقبة حالة المصادقة من فايربيس مباشرة
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                isAdmin = true;
+                document.getElementById('admin-panel').classList.remove('hidden');
+                filterProducts();
+            } else {
+                isAdmin = false;
+                document.getElementById('admin-panel').classList.add('hidden');
+                filterProducts();
+            }
+        });
 
         const translations = {
             ar: {
@@ -686,21 +702,31 @@
             isAdmin ? document.getElementById('admin-panel').scrollIntoView({behavior:'smooth'}) : document.getElementById('admin-modal').classList.remove('hidden'); 
         }
         window.closeAdminModal = function() { document.getElementById('admin-modal').classList.add('hidden'); }
-        window.verifyAdmin = function(e) {
+        
+        // التحقق الآمن عبر حساب فايربيس (Firebase Authentication)
+        window.verifyAdmin = async function(e) {
             e.preventDefault();
-            if (document.getElementById('admin-pass').value === 'Mahmoud123mas@2002#') {
-                isAdmin = true; 
-                closeAdminModal(); 
-                document.getElementById('admin-panel').classList.remove('hidden'); 
-                filterProducts();
-            } else { alert('كلمة المرور غير صحيحة!'); }
+            const email = document.getElementById('admin-email').value;
+            const pass = document.getElementById('admin-pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                closeAdminModal();
+                alert('تم تسجيل الدخول بنجاح كمالك للمتجر!');
+            } catch (error) {
+                console.error("خطأ في تسجيل الدخول:", error);
+                alert('البريد الإلكتروني أو كلمة المرور غير صحيحة!');
+            }
         }
-        window.logoutAdmin = function() { 
-            isAdmin = false; 
-            document.getElementById('admin-panel').classList.add('hidden'); 
-            // إزالة كلمة ?admin من الرابط عند الخروج
-            window.history.replaceState({}, document.title, window.location.pathname);
-            filterProducts(); 
+
+        window.logoutAdmin = async function() { 
+            try {
+                await signOut(auth);
+                document.getElementById('admin-panel').classList.add('hidden');
+                window.history.replaceState({}, document.title, window.location.pathname);
+                alert('تم تسجيل الخروج بنجاح.');
+            } catch (error) {
+                console.error("خطأ عند تسجيل الخروج:", error);
+            }
         }
 
         // التحقق التلقائي من الرابط السري عند فتح الصفحة
@@ -746,7 +772,7 @@
                 fetchProductsFromCloud();
             } catch (error) {
                 console.error("خطأ أثناء النشر:", error);
-                alert("حدث خطأ أثناء رفع المنتج للسحابة.");
+                alert("حدث خطأ أثناء رفع المنتج للسحابة (تأكد من تسجيل الدخول بحساب المالك).");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "نشر المنتج في المتجر (سحابياً)";
@@ -761,7 +787,7 @@
                     fetchProductsFromCloud();
                 } catch (error) {
                     console.error("خطأ في الحذف:", error);
-                    alert("تعذر حذف المنتج.");
+                    alert("تعذر حذف المنتج (غير مسجل الدخول كمالك).");
                 }
             }
         }
