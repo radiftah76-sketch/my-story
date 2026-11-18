@@ -81,10 +81,7 @@
                     <span id="header-user-name" class="hidden sm:inline" data-i18n="login_btn">حسابي</span>
                 </button>
 
-                <button onclick="openAdminModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-2 px-3 rounded-xl text-xs transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span class="hidden sm:inline" data-i18n="admin_btn">المالك</span>
-                </button>
+                <!-- تم إخفاء زر المالك من هنا لكي لا يظهر للزبائن -->
 
                 <button onclick="openCartModal()" class="relative bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2 rounded-xl transition">
                     <i class="fa-solid fa-bag-shopping text-base text-amber-400"></i>
@@ -147,7 +144,7 @@
         </div>
     </section>
 
-    <!-- ماركات السيارات (التي عند الضغط عليها تظهر قطعها الخاصة) -->
+    <!-- ماركات السيارات -->
     <section id="brands-section" class="container mx-auto px-4 pt-8 pb-4">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
@@ -159,7 +156,7 @@
         <div id="brands-container" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2.5"></div>
     </section>
 
-    <!-- لوحة تحكم المالك -->
+    <!-- لوحة تحكم المالك (تفتح فقط عبر الرابط السري) -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
         <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
@@ -329,7 +326,7 @@
 
         const translations = {
             ar: {
-                track_btn: "تتبع الطلب", login_btn: "حسابي", admin_btn: "المالك",
+                track_btn: "تتبع الطلب", login_btn: "حسابي",
                 hero_title: "قطع غيار ومعدات السيارات الأصلية في المغرب",
                 hero_subtitle: "ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.",
                 browse_btn: "تصفح حسب السيارة", compare_btn: "مقارنة القطع",
@@ -341,7 +338,7 @@
                 sidebar_title: "ملفي الشخصي ومشترياتي", my_orders_title: "مشترياتي السابقة", support_wa: "تواصل مع خدمة الزبائن"
             },
             fr: {
-                track_btn: "Suivi", login_btn: "Compte", admin_btn: "Admin",
+                track_btn: "Suivi", login_btn: "Compte",
                 hero_title: "Pièces et équipements auto d'origine au Maroc",
                 hero_subtitle: "Recherchez votre pièce et commandez directement sur WhatsApp.",
                 browse_btn: "Choisir ma voiture", compare_btn: "Comparer",
@@ -353,7 +350,7 @@
                 sidebar_title: "Mon Profil & Achats", my_orders_title: "Mes commandes passées", support_wa: "Service Client WhatsApp"
             },
             en: {
-                track_btn: "Track", login_btn: "Account", admin_btn: "Admin",
+                track_btn: "Track", login_btn: "Account",
                 hero_title: "Original Car Parts & Equipment in Morocco",
                 hero_subtitle: "Search for the part you need and order directly via WhatsApp.",
                 browse_btn: "Select Car", compare_btn: "Compare",
@@ -684,15 +681,32 @@
             renderSidebarContent();
         }
 
-        window.openAdminModal = function() { isAdmin ? document.getElementById('admin-panel').scrollIntoView({behavior:'smooth'}) : document.getElementById('admin-modal').classList.remove('hidden'); }
+        // دالة فتح لوحة المالك عبر الرابط السري (?admin)
+        window.openAdminModal = function() { 
+            isAdmin ? document.getElementById('admin-panel').scrollIntoView({behavior:'smooth'}) : document.getElementById('admin-modal').classList.remove('hidden'); 
+        }
         window.closeAdminModal = function() { document.getElementById('admin-modal').classList.add('hidden'); }
         window.verifyAdmin = function(e) {
             e.preventDefault();
             if (document.getElementById('admin-pass').value === 'Mahmoud123mas@2002#') {
-                isAdmin = true; closeAdminModal(); document.getElementById('admin-panel').classList.remove('hidden'); filterProducts();
+                isAdmin = true; 
+                closeAdminModal(); 
+                document.getElementById('admin-panel').classList.remove('hidden'); 
+                filterProducts();
             } else { alert('كلمة المرور غير صحيحة!'); }
         }
-        window.logoutAdmin = function() { isAdmin = false; document.getElementById('admin-panel').classList.add('hidden'); filterProducts(); }
+        window.logoutAdmin = function() { 
+            isAdmin = false; 
+            document.getElementById('admin-panel').classList.add('hidden'); 
+            // إزالة كلمة ?admin من الرابط عند الخروج
+            window.history.replaceState({}, document.title, window.location.pathname);
+            filterProducts(); 
+        }
+
+        // التحقق التلقائي من الرابط السري عند فتح الصفحة
+        if (window.location.search.includes('admin')) {
+            setTimeout(() => { openAdminModal(); }, 500);
+        }
 
         function convertFileToBase64(file) {
             return new Promise((resolve, reject) => {
