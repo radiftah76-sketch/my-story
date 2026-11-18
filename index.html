@@ -154,15 +154,19 @@
         <div id="brands-container" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2.5"></div>
     </section>
 
-    <!-- لوحة تحكم المالك (محمية ومقيدة بربط المصادقة) -->
+    <!-- لوحة تحكم المالك (يدعم الإضافة والتعذيل) -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
         <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
-                <h2 class="text-lg font-black text-amber-500" data-i18n="admin_panel_title">لوحة تحكم المالك - إضافة منتج جديد</h2>
-                <button onclick="logoutAdmin()" class="bg-rose-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold" data-i18n="logout">خروج</button>
+                <h2 id="admin-form-title" class="text-lg font-black text-amber-500">لوحة تحكم المالك - إضافة منتج جديد</h2>
+                <div class="flex gap-2">
+                    <button id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold">إلغاء التعديل</button>
+                    <button onclick="logoutAdmin()" class="bg-rose-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold" data-i18n="logout">خروج</button>
+                </div>
             </div>
 
-            <form onsubmit="addNewProduct(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onsubmit="handleProductSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-product-id" value="">
                 <div>
                     <label class="block text-xs font-bold mb-1">اسم القطعة:</label>
                     <input type="text" id="prod-name" placeholder="مثال: مكابح أمامية" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
@@ -187,7 +191,8 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold mb-1">صورة المنتج:</label>
-                    <input type="file" id="prod-image" accept="image/*" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
+                    <input type="file" id="prod-image" accept="image/*" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
+                    <p class="text-[10px] text-slate-400 mt-1">اتركه فارغاً إذا لمغن ترغب بتغيير الصورة القديمة عند التعديل.</p>
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-xs font-bold mb-1">الوصف:</label>
@@ -295,10 +300,10 @@
         <p>© 2026 Equipements Automobiles - جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- سكربت Firebase المتكامل وجافاسكربت التشغيل مع نظام المصادقة الحقيقي -->
+    <!-- سكربت Firebase المتكامل مع ميزة التعديل (Update) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -327,7 +332,6 @@
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
 
-        // مراقبة حالة المصادقة من فايربيس مباشرة
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 isAdmin = true;
@@ -562,7 +566,12 @@
 
             list.forEach(p => {
                 const isComp = compareList.includes(p.id);
-                const deleteBtn = isAdmin ? `<button onclick="deleteProduct('${p.id}')" class="w-full bg-rose-500/10 text-rose-500 font-bold py-2 rounded-xl text-xs mt-2"><i class="fa-solid fa-trash"></i> حذف من السحابة</button>` : '';
+                const adminButtons = isAdmin ? `
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <button onclick="prepareEditProduct('${p.id}')" class="bg-blue-500/10 text-blue-500 font-bold py-2 rounded-xl text-xs"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                        <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/10 text-rose-500 font-bold py-2 rounded-xl text-xs"><i class="fa-solid fa-trash"></i> حذف</button>
+                    </div>
+                ` : '';
 
                 grid.innerHTML += `
                     <div class="product-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm">
@@ -587,7 +596,7 @@
                             <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', ${p.price})" class="w-full bg-slate-900 dark:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">
                                 <i class="fa-solid fa-cart-plus"></i> <span>${translations[currentLang].add_cart}</span>
                             </button>
-                            ${deleteBtn}
+                            ${adminButtons}
                         </div>
                     </div>
                 `;
@@ -648,6 +657,7 @@
                     </table>
                 `;
             }
+            document.getElementById('compare-modal').classList.add('hidden'); // تم التصحيح هنا
             document.getElementById('compare-modal').classList.remove('hidden');
         }
 
@@ -697,13 +707,11 @@
             renderSidebarContent();
         }
 
-        // دالة فتح لوحة المالك عبر الرابط السري (?admin)
         window.openAdminModal = function() { 
             isAdmin ? document.getElementById('admin-panel').scrollIntoView({behavior:'smooth'}) : document.getElementById('admin-modal').classList.remove('hidden'); 
         }
         window.closeAdminModal = function() { document.getElementById('admin-modal').classList.add('hidden'); }
         
-        // التحقق الآمن عبر حساب فايربيس (Firebase Authentication)
         window.verifyAdmin = async function(e) {
             e.preventDefault();
             const email = document.getElementById('admin-email').value;
@@ -729,7 +737,6 @@
             }
         }
 
-        // التحقق التلقائي من الرابط السري عند فتح الصفحة
         if (window.location.search.includes('admin')) {
             setTimeout(() => { openAdminModal(); }, 500);
         }
@@ -743,39 +750,85 @@
             });
         }
 
-        window.addNewProduct = async function(e) {
+        // تجهيز النموذج لتعديل المنتج
+        window.prepareEditProduct = function(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('edit-product-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-brand').value = p.brand || 'all';
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-desc').value = p.desc || '';
+            
+            document.getElementById('admin-form-title').innerText = "تعديل المنتج المحدد";
+            document.getElementById('publish-btn').innerText = "تحديث بيانات المنتج في السحابة";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            document.getElementById('admin-panel').scrollIntoView({behavior:'smooth'});
+        }
+
+        window.resetAdminForm = function() {
+            document.getElementById('edit-product-id').value = "";
+            document.querySelector('#admin-panel form').reset();
+            document.getElementById('admin-form-title').innerText = "لوحة تحكم المالك - إضافة منتج جديد";
+            document.getElementById('publish-btn').innerText = "نشر المنتج في المتجر (سحابياً)";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        // دالة مركزية للتعامل مع الإضافة أو التعديل
+        window.handleProductSubmit = async function(e) {
             e.preventDefault();
+            const editId = document.getElementById('edit-product-id').value;
             const btn = document.getElementById('publish-btn');
             btn.disabled = true;
-            btn.innerText = "جاري النشر في سحابة Firebase...";
 
             try {
                 const fileInput = document.getElementById('prod-image');
-                let imageUrl = "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80";
+                let imageUrl = null;
                 
                 if (fileInput.files && fileInput.files[0]) {
                     imageUrl = await convertFileToBase64(fileInput.files[0]);
                 }
 
-                const newProductData = {
-                    name: document.getElementById('prod-name').value,
-                    brand: document.getElementById('prod-brand').value,
-                    price: Number(document.getElementById('prod-price').value),
-                    desc: document.getElementById('prod-desc').value,
-                    image: imageUrl,
-                    createdAt: new Date()
-                };
+                if (editId) {
+                    // عملية التعديل (Update)
+                    btn.innerText = "جاري تحديث المنتج في السحابة...";
+                    const productRef = doc(db, "produits", editId);
+                    const updateData = {
+                        name: document.getElementById('prod-name').value,
+                        brand: document.getElementById('prod-brand').value,
+                        price: Number(document.getElementById('prod-price').value),
+                        desc: document.getElementById('prod-desc').value
+                    };
+                    if (imageUrl) updateData.image = imageUrl; // تحديث الصورة فقط إذا تم اختيار صورة جديدة
 
-                await addDoc(productsCol, newProductData);
-                alert('تم نشر المنتج في سحابة Firebase بنجاح!');
-                e.target.reset();
+                    await updateDoc(productRef, updateData);
+                    alert('تم تحديث المنتج بنجاح!');
+                } else {
+                    // عملية الإضافة الجديدة (Create)
+                    btn.innerText = "جاري النشر في سحابة Firebase...";
+                    imageUrl = imageUrl || "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w-600&q=80";
+                    const newProductData = {
+                        name: document.getElementById('prod-name').value,
+                        brand: document.getElementById('prod-brand').value,
+                        price: Number(document.getElementById('prod-price').value),
+                        desc: document.getElementById('prod-desc').value,
+                        image: imageUrl,
+                        createdAt: new Date()
+                    };
+                    await addDoc(productsCol, newProductData);
+                    alert('تم نشر المنتج في سحابة Firebase بنجاح!');
+                }
+
+                resetAdminForm();
                 fetchProductsFromCloud();
             } catch (error) {
-                console.error("خطأ أثناء النشر:", error);
-                alert("حدث خطأ أثناء رفع المنتج للسحابة (تأكد من تسجيل الدخول بحساب المالك).");
+                console.error("خطأ أثناء العملية:", error);
+                alert("حدث خطأ أثناء حفظ البيانات.");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "نشر المنتج في المتجر (سحابياً)";
+                btn.innerText = editId ? "تحديث بيانات المنتج في السحابة" : "نشر المنتج في المتجر (سحابياً)";
             }
         }
 
