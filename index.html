@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipements Automobiles | المتجر الاحترافي لقطع غيار Renault و Dacia</title>
+    <title>Equipements Automobiles | المتجر الاحترافي لقطع غيار السيارات</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,9 +25,9 @@
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
         }
-        .brand-btn.active, .model-btn.active {
+        .model-box.active {
             border-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.15);
+            background: rgba(245, 158, 11, 0.16);
             transform: translateY(-2px);
         }
         .product-card {
@@ -55,7 +55,7 @@
                     </div>
                     <div>
                         <span class="text-lg md:text-xl font-black tracking-tight block leading-none">Equipements <span class="text-amber-400">Auto</span></span>
-                        <span class="text-[10px] text-slate-400 tracking-widest uppercase">Renault & Dacia • Maroc</span>
+                        <span class="text-[10px] text-slate-400 tracking-widest uppercase">Maroc Store</span>
                     </div>
                 </div>
             </div>
@@ -125,16 +125,16 @@
     <!-- الواجهة الرئيسية -->
     <section class="bg-slate-900 text-white py-12 md:py-16 text-center px-4 relative overflow-hidden">
         <div class="max-w-3xl mx-auto relative z-10">
-            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">قطع غيار ومعدات Renault و Dacia في المغرب</h1>
-            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-6">اختر سيارتك (Clio، Megane، Kangoo، Express، Logan، Sandero، Duster...) واطلب قطعتك مباشرة عبر واتساب.</p>
+            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">قطع غيار ومعدات السيارات الأصلية في المغرب</h1>
+            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-6">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
             
             <div class="relative max-w-xl mx-auto mb-6">
-                <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="ابحث عن قطعة (مثال: مكابح، فيلتر، ديسك، Clio، Megane...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
+                <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="ابحث عن قطعة غيار (مثال: مكابح، فيلتر، LED...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
                 <i id="search-icon" class="fa-solid fa-magnifying-glass absolute top-4 right-4 text-slate-400 text-lg"></i>
             </div>
 
             <div class="flex flex-wrap justify-center gap-3">
-                <a href="#brands-section" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
+                <a href="#renault-showcase" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
                 <button onclick="openCompareModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition">
                     <span data-i18n="compare_btn">مقارنة القطع</span> (<span id="compare-count">0</span>)
                 </button>
@@ -142,33 +142,33 @@
         </div>
     </section>
 
-    <!-- شعار رينو وداسيا في الأعلى وتحتهما الموديلات المغربية -->
-    <section id="brands-section" class="container mx-auto px-4 pt-8 pb-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-car text-amber-500"></i>
-                <span data-i18n="brands_title">اختر العلامة وموديل السيارة (المغرب):</span>
-            </h2>
-            <button onclick="resetFilters()" data-i18n="show_all" class="text-xs md:text-sm text-amber-600 dark:text-amber-400 font-bold hover:underline">عرض الكل</button>
-        </div>
+    <!-- شعار Renault الكبير الاحترافي وتحته مربعات السيارات (بما فيها Dacia) -->
+    <section id="renault-showcase" class="container mx-auto px-4 pt-8 pb-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm">
+            <!-- شعار Renault كبير واحترافي في الأعلى -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-5 mb-6 border-b border-slate-200 dark:border-slate-800">
+                <div onclick="resetFilters()" class="flex items-center gap-4 cursor-pointer group">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-slate-950 dark:bg-slate-800 border-2 border-amber-500/50 group-hover:border-amber-500 flex items-center justify-center p-3 shadow-lg transition">
+                        <img src="https://www.carlogos.org/car-logos/renault-logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="Renault" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <span class="inline-block text-[11px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full mb-1">RENAULT • MAROC</span>
+                        <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">معدات وقطع غيار Renault</h2>
+                        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">اختر موديل سيارتك في المربعات أسفله لعرض جميع القطع الخاصة بها</p>
+                    </div>
+                </div>
 
-        <!-- الصف العلوي: شعار Renault و Dacia معاً والكل -->
-        <div id="brands-container" class="grid grid-cols-3 gap-3 mb-5"></div>
-
-        <!-- شريط موديلات السيارات المتوفرة في المغرب -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <span id="models-section-label" class="text-xs md:text-sm font-extrabold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-amber-500"></i>
-                    <span>موديلات Renault و Dacia بالمغرب:</span>
-                </span>
-                <span id="active-model-badge" class="text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-full">جميع الموديلات</span>
+                <button onclick="resetFilters()" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 font-bold px-4 py-2 rounded-xl text-xs transition" data-i18n="show_all">
+                    عرض الكل
+                </button>
             </div>
-            <div id="models-container" class="flex flex-wrap gap-2"></div>
+
+            <!-- مربعات أسماء السيارات (Megane, Clio, Kangoo, Express, Symbol + Dacia) -->
+            <div id="models-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
         </div>
     </section>
 
-    <!-- لوحة تحكم المالك (يدعم الإضافة والتعديل مع اختيار عدة موديلات) -->
+    <!-- لوحة تحكم المالك (إضافة وتعديل مع اختيار عدة موديلات) -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
         <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
@@ -183,47 +183,34 @@
                 <input type="hidden" id="edit-product-id" value="">
                 <div>
                     <label class="block text-xs font-bold mb-1">اسم القطعة:</label>
-                    <input type="text" id="prod-name" placeholder="مثال: مكابح أمامية، فيلتر هواء، ديسك..." required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                    <input type="text" id="prod-name" placeholder="مثال: مكابح أمامية، فيلتر، ديسك..." required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold mb-1">العلامة الرئيسية:</label>
-                    <select id="prod-brand" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
-                        <option value="Renault">Renault</option>
-                        <option value="Dacia">Dacia</option>
-                        <option value="all">Renault & Dacia (مشترك / عام)</option>
-                    </select>
+                    <label class="block text-xs font-bold mb-1">السعر (بالدرهم):</label>
+                    <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اختيار موديل واحد أو عدة موديلات تناسبها القطعة -->
+                <!-- اختيار موديل واحد أو عدة موديلات (مثال: Megane + Clio + Dacia) -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-3.5">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                         <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400">
-                            الموديلات المناسبة للقطعة (يمكنك تحديد أكثر من سيارة مثلاً Clio + Megane):
+                            الموديلات المناسبة للقطعة (يمكنك اختيار أكثر من سيارة في نفس الوقت):
                         </label>
                         <button type="button" onclick="selectAllModelsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
                             تحديد الكل
                         </button>
                     </div>
-
-                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">موديلات Renault:</p>
-                    <div id="form-renault-models" class="flex flex-wrap gap-2 mb-3"></div>
-
-                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">موديلات Dacia:</p>
-                    <div id="form-dacia-models" class="flex flex-wrap gap-2"></div>
+                    <div id="form-models-checkboxes" class="flex flex-wrap gap-2"></div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold mb-1">السعر (بالدرهم):</label>
-                    <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
-                </div>
                 <div>
                     <label class="block text-xs font-bold mb-1">صورة المنتج:</label>
                     <input type="file" id="prod-image" accept="image/*" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
                     <p class="text-[10px] text-slate-400 mt-1">اتركه فارغاً إذا لم ترغب بتغيير الصورة القديمة عند التعديل.</p>
                 </div>
-                <div class="md:col-span-2">
+                <div>
                     <label class="block text-xs font-bold mb-1">الوصف:</label>
-                    <input type="text" id="prod-desc" placeholder="تفاصيل القطعة (مثال: أصلية، تركب على Clio 3 و Megane 2...)" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                    <input type="text" id="prod-desc" placeholder="تفاصيل القطعة..." required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div class="md:col-span-2">
                     <button type="submit" id="publish-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition">نشر المنتج في المتجر (سحابياً)</button>
@@ -324,10 +311,10 @@
     </a>
 
     <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs mt-12 border-t border-slate-800">
-        <p>© 2026 Equipements Automobiles (Renault & Dacia Maroc) - جميع الحقوق محفوظة</p>
+        <p>© 2026 Equipements Automobiles - جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- سكربت Firebase المتكامل مع الموديلات المتعددة -->
+    <!-- سكربت Firebase المتكامل -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -352,7 +339,6 @@
         let cartItems = [];
         let compareList = [];
         let isAdmin = false;
-        let selectedBrand = "all";
         let selectedModel = "all";
         let currentLang = "ar";
         let products = [];
@@ -375,10 +361,10 @@
         const translations = {
             ar: {
                 track_btn: "تتبع الطلب", login_btn: "حسابي",
-                hero_title: "قطع غيار ومعدات Renault و Dacia في المغرب",
-                hero_subtitle: "اختر سيارتك (Clio، Megane، Kangoo، Express، Logan، Sandero، Duster...) واطلب قطعتك مباشرة عبر واتساب.",
+                hero_title: "قطع غيار ومعدات السيارات الأصلية في المغرب",
+                hero_subtitle: "ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.",
                 browse_btn: "تصفح حسب السيارة", compare_btn: "مقارنة القطع",
-                brands_title: "اختر العلامة وموديل السيارة (المغرب):", show_all: "عرض الكل", all_brands: "الكل (Renault & Dacia)",
+                show_all: "عرض الكل", all_models: "الكل",
                 available_parts: "القطع المتاحة", order_wa: "اطلب عبر واتساب", add_cart: "أضف للسلة",
                 no_results_msg: "لم نجد قطعاً مطابقة لبحثك.", cart_title: "سلة المشتريات",
                 total_lbl: "المجموع:", checkout_wa: "إرسال الطلب عبر واتساب", clear_cart: "إفراغ السلة",
@@ -387,10 +373,10 @@
             },
             fr: {
                 track_btn: "Suivi", login_btn: "Compte",
-                hero_title: "Pièces & équipements Renault et Dacia au Maroc",
-                hero_subtitle: "Choisissez votre modèle (Clio, Megane, Kangoo, Express, Logan, Sandero, Duster...) et commandez sur WhatsApp.",
+                hero_title: "Pièces et équipements auto d'origine au Maroc",
+                hero_subtitle: "Recherchez votre pièce et commandez directement sur WhatsApp.",
                 browse_btn: "Choisir ma voiture", compare_btn: "Comparer",
-                brands_title: "Marque et modèle au Maroc :", show_all: "Tout voir", all_brands: "Tous (Renault & Dacia)",
+                show_all: "Tout voir", all_models: "Tous",
                 available_parts: "Pièces disponibles", order_wa: "Commander", add_cart: "Ajouter",
                 no_results_msg: "Aucune pièce trouvée.", cart_title: "Panier",
                 total_lbl: "Total :", checkout_wa: "Commander sur WhatsApp", clear_cart: "Vider le panier",
@@ -399,10 +385,10 @@
             },
             en: {
                 track_btn: "Track", login_btn: "Account",
-                hero_title: "Renault & Dacia Parts & Equipment in Morocco",
-                hero_subtitle: "Select your model (Clio, Megane, Kangoo, Express, Logan, Sandero, Duster...) and order via WhatsApp.",
+                hero_title: "Original Car Parts & Equipment in Morocco",
+                hero_subtitle: "Search for the part you need and order directly via WhatsApp.",
                 browse_btn: "Select Car", compare_btn: "Compare",
-                brands_title: "Brand & Model in Morocco:", show_all: "Show All", all_brands: "All (Renault & Dacia)",
+                show_all: "Show All", all_models: "All",
                 available_parts: "Available Parts", order_wa: "Order via WhatsApp", add_cart: "Add to Cart",
                 no_results_msg: "No matching parts found.", cart_title: "Shopping Cart",
                 total_lbl: "Total:", checkout_wa: "Send via WhatsApp", clear_cart: "Clear Cart",
@@ -411,32 +397,27 @@
             }
         };
 
-        // العلامتان الرئيسيتان: Renault و Dacia (التابعة لها) + الكل
-        const carBrands = [
-            { id: "all", name: "الكل", logo: "https://cdn-icons-png.flaticon.com/512/3202/3202926.png" },
-            { id: "Renault", name: "Renault", logo: "https://www.carlogos.org/car-logos/renault-logo.png" },
-            { id: "Dacia", name: "Dacia", logo: "https://www.carlogos.org/car-logos/dacia-logo.png" }
+        // المربعات أسفل شعار Renault: موديلات Renault المغربية + Dacia بداخل مربع بنفس الشكل
+        const carModelBoxes = [
+            { id: "all", name: "الكل", sub: "Renault & Dacia", icon: "fa-border-all", logo: null },
+            { id: "Megane", name: "Megane", sub: "Renault", icon: "fa-car", logo: null },
+            { id: "Clio", name: "Clio", sub: "Renault", icon: "fa-car-side", logo: null },
+            { id: "Kangoo", name: "Kangoo", sub: "Renault", icon: "fa-van-shuttle", logo: null },
+            { id: "Express", name: "Express", sub: "Renault", icon: "fa-truck-pickup", logo: null },
+            { id: "Symbol", name: "Symbol", sub: "Renault", icon: "fa-car", logo: null },
+            { id: "Dacia", name: "Dacia", sub: "Renault Group", icon: null, logo: "https://www.carlogos.org/car-logos/dacia-logo.png" },
+            { id: "Logan", name: "Logan", sub: "Dacia", icon: "fa-car", logo: null },
+            { id: "Sandero", name: "Sandero", sub: "Dacia", icon: "fa-car-side", logo: null },
+            { id: "Duster", name: "Duster", sub: "Dacia", icon: "fa-truck-monster", logo: null },
+            { id: "Dokker", name: "Dokker", sub: "Dacia", icon: "fa-van-shuttle", logo: null },
+            { id: "Lodgy", name: "Lodgy", sub: "Dacia", icon: "fa-shuttle-van", logo: null }
         ];
 
-        // موديلات Renault و Dacia المنتشرة في المغرب
-        const renaultModels = ["Clio", "Megane", "Kangoo", "Express", "Symbol", "Master", "Trafic"];
-        const daciaModels = ["Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
+        const selectableProductModels = ["Megane", "Clio", "Kangoo", "Express", "Symbol", "Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
 
         function renderModelCheckboxesInForm(selectedList = []) {
-            const renContainer = document.getElementById('form-renault-models');
-            const dacContainer = document.getElementById('form-dacia-models');
-
-            renContainer.innerHTML = renaultModels.map(m => {
-                const checked = selectedList.includes(m) ? 'checked' : '';
-                return `
-                    <label class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 border dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer hover:border-amber-500">
-                        <input type="checkbox" name="prod-models" value="${m}" ${checked} class="accent-amber-500 rounded">
-                        <span>${m}</span>
-                    </label>
-                `;
-            }).join('');
-
-            dacContainer.innerHTML = daciaModels.map(m => {
+            const container = document.getElementById('form-models-checkboxes');
+            container.innerHTML = selectableProductModels.map(m => {
                 const checked = selectedList.includes(m) ? 'checked' : '';
                 return `
                     <label class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 border dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer hover:border-amber-500">
@@ -583,104 +564,63 @@
                 if (translations[lang][key]) el.innerText = translations[lang][key];
             });
             renderSidebarContent();
-            renderBrands();
-            renderModelsBar();
+            renderModelBoxes();
             filterProducts();
         }
 
-        function renderBrands() {
-            const container = document.getElementById('brands-container');
-            container.innerHTML = carBrands.map(b => {
-                const isActive = selectedBrand === b.id ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-800';
-                const label = b.id === 'all' ? translations[currentLang].all_brands : b.name;
+        function renderModelBoxes() {
+            const container = document.getElementById('models-grid');
+            if (!container) return;
+
+            container.innerHTML = carModelBoxes.map(box => {
+                const isActive = selectedModel === box.id ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
+                const label = box.id === 'all' ? translations[currentLang].all_models : box.name;
+
+                const visual = box.logo
+                    ? `<img src="${box.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${box.name}" class="w-9 h-9 object-contain">`
+                    : `<div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center"><i class="fa-solid ${box.icon} text-base"></i></div>`;
+
                 return `
-                    <button onclick="selectBrand('${b.id}')" class="brand-btn ${isActive} bg-white dark:bg-slate-900 border rounded-2xl p-3 flex flex-col items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
-                        <img src="${b.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" class="w-9 h-9 object-contain">
-                        <span class="text-xs font-bold">${label}</span>
+                    <button type="button" onclick="selectModel('${box.id}')" class="model-box ${isActive} bg-slate-50 dark:bg-slate-800/70 border rounded-2xl p-3.5 flex flex-col items-center justify-center gap-1.5 shadow-sm transition cursor-pointer text-center">
+                        ${visual}
+                        <span class="text-sm font-black text-slate-900 dark:text-white">${label}</span>
+                        <span class="text-[10px] font-bold text-slate-400">${box.sub}</span>
                     </button>
                 `;
             }).join('');
         }
 
-        function renderModelsBar() {
-            const modelsContainer = document.getElementById('models-container');
-            const badge = document.getElementById('active-model-badge');
-
-            let visibleModels = [];
-            if (selectedBrand === 'Renault') {
-                visibleModels = renaultModels;
-            } else if (selectedBrand === 'Dacia') {
-                visibleModels = daciaModels;
-            } else {
-                visibleModels = [...renaultModels, ...daciaModels];
-            }
-
-            if (selectedModel !== 'all' && !visibleModels.includes(selectedModel)) {
-                selectedModel = 'all';
-            }
-
-            badge.innerText = selectedModel === 'all' ? 'جميع الموديلات' : selectedModel;
-
-            const allBtnClass = selectedModel === 'all'
-                ? 'active border-amber-500 bg-amber-500/15 text-amber-600 dark:text-amber-400'
-                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200';
-
-            let html = `
-                <button onclick="selectModel('all')" class="model-btn ${allBtnClass} border px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                    الكل
-                </button>
-            `;
-
-            html += visibleModels.map(m => {
-                const isActive = selectedModel === m;
-                const btnClass = isActive
-                    ? 'active border-amber-500 bg-amber-500/15 text-amber-600 dark:text-amber-400'
-                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-amber-500';
-                const tag = renaultModels.includes(m) ? 'Renault' : 'Dacia';
-                return `
-                    <button onclick="selectModel('${m}')" class="model-btn ${btnClass} border px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
-                        <span>${m}</span>
-                        <span class="text-[10px] opacity-70">(${tag})</span>
-                    </button>
-                `;
-            }).join('');
-
-            modelsContainer.innerHTML = html;
-        }
-
-        window.selectBrand = function(id) {
-            selectedBrand = id;
-            selectedModel = "all";
-            renderBrands();
-            renderModelsBar();
-            filterProducts();
-        }
-
-        window.selectModel = function(modelName) {
-            selectedModel = modelName;
-            renderModelsBar();
+        window.selectModel = function(modelId) {
+            selectedModel = modelId;
+            renderModelBoxes();
             filterProducts();
         }
 
         window.resetFilters = function() {
-            selectedBrand = "all";
             selectedModel = "all";
             document.getElementById('search-input').value = "";
-            renderBrands();
-            renderModelsBar();
+            renderModelBoxes();
             filterProducts();
         }
 
         window.filterProducts = function() {
             const queryText = document.getElementById('search-input').value.toLowerCase().trim();
             const filtered = products.filter(p => {
-                const pBrand = p.brand || 'all';
-                const matchBrand = (selectedBrand === 'all') || (pBrand === selectedBrand) || (pBrand === 'all');
-
                 let matchModel = true;
                 if (selectedModel !== 'all') {
                     const pModels = Array.isArray(p.models) ? p.models : [];
-                    matchModel = pModels.includes(selectedModel) || (p.desc && p.desc.toLowerCase().includes(selectedModel.toLowerCase()));
+                    const matchesSelectedBox =
+                        pModels.includes(selectedModel) ||
+                        p.brand === selectedModel ||
+                        (p.desc && p.desc.toLowerCase().includes(selectedModel.toLowerCase()));
+
+                    if (selectedModel === 'Dacia') {
+                        const daciaList = ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
+                        const matchesDaciaGroup = pModels.some(m => daciaList.includes(m));
+                        matchModel = matchesSelectedBox || matchesDaciaGroup;
+                    } else {
+                        matchModel = matchesSelectedBox;
+                    }
                 }
 
                 const modelsText = Array.isArray(p.models) ? p.models.join(' ').toLowerCase() : '';
@@ -690,7 +630,7 @@
                     (p.desc && p.desc.toLowerCase().includes(queryText)) ||
                     modelsText.includes(queryText);
 
-                return matchBrand && matchModel && matchSearch;
+                return matchModel && matchSearch;
             });
             renderProductsList(filtered);
         }
@@ -713,11 +653,9 @@
                     </div>
                 ` : '';
 
-                const modelsList = Array.isArray(p.models) && p.models.length
-                    ? p.models.map(m => `<span class="text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">${m}</span>`).join(' ')
-                    : '';
-
-                const brandLabel = (!p.brand || p.brand === 'all') ? 'Renault & Dacia' : p.brand;
+                const modelsBadges = Array.isArray(p.models) && p.models.length
+                    ? p.models.map(m => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${m}</span>`).join(' ')
+                    : `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">Renault</span>`;
 
                 grid.innerHTML += `
                     <div class="product-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm">
@@ -730,8 +668,7 @@
                             </div>
                             <div class="p-4">
                                 <div class="flex flex-wrap items-center gap-1.5 mb-1">
-                                    <span class="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">${brandLabel}</span>
-                                    ${modelsList}
+                                    ${modelsBadges}
                                 </div>
                                 <h3 class="text-base font-bold mt-1 mb-1">${p.name}</h3>
                                 <p class="text-slate-500 text-xs mb-3">${p.desc || ''}</p>
@@ -898,14 +835,12 @@
             });
         }
 
-        // تجهيز النموذج لتعديل المنتج مع استرجاع الموديلات المحددة مسبقاً
         window.prepareEditProduct = function(id) {
             const p = products.find(item => item.id === id);
             if (!p) return;
 
             document.getElementById('edit-product-id').value = p.id;
             document.getElementById('prod-name').value = p.name;
-            document.getElementById('prod-brand').value = p.brand || 'Renault';
             document.getElementById('prod-price').value = p.price;
             document.getElementById('prod-desc').value = p.desc || '';
 
@@ -927,7 +862,6 @@
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
-        // دالة مركزية للتعامل مع الإضافة أو التعديل وحفظ الموديلات المختارة
         window.handleProductSubmit = async function(e) {
             e.preventDefault();
             const editId = document.getElementById('edit-product-id').value;
@@ -935,6 +869,9 @@
             btn.disabled = true;
 
             const selectedModels = Array.from(document.querySelectorAll('input[name="prod-models"]:checked')).map(cb => cb.value);
+            const mainBrand = selectedModels.some(m => ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"].includes(m)) && !selectedModels.some(m => ["Megane", "Clio", "Kangoo", "Express", "Symbol"].includes(m))
+                ? "Dacia"
+                : "Renault";
 
             try {
                 const fileInput = document.getElementById('prod-image');
@@ -949,7 +886,7 @@
                     const productRef = doc(db, "produits", editId);
                     const updateData = {
                         name: document.getElementById('prod-name').value,
-                        brand: document.getElementById('prod-brand').value,
+                        brand: mainBrand,
                         models: selectedModels,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value
@@ -963,7 +900,7 @@
                     imageUrl = imageUrl || "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80";
                     const newProductData = {
                         name: document.getElementById('prod-name').value,
-                        brand: document.getElementById('prod-brand').value,
+                        brand: mainBrand,
                         models: selectedModels,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value,
@@ -1000,8 +937,7 @@
 
         renderModelCheckboxesInForm([]);
         renderSidebarContent();
-        renderBrands();
-        renderModelsBar();
+        renderModelBoxes();
         fetchProductsFromCloud();
     </script>
 </body>
