@@ -347,14 +347,16 @@
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                isAdmin = true;
-                document.getElementById('admin-panel').classList.remove('hidden');
-                filterProducts();
-            } else {
-                isAdmin = false;
-                document.getElementById('admin-panel').classList.add('hidden');
-                filterProducts();
+           const wantsAdmin = window.location.search.includes('admin');
+    if (user && wantsAdmin) {
+        isAdmin = true;
+        document.getElementById('admin-panel').classList.remove('hidden');
+        filterProducts();
+    } else {
+        isAdmin = false;
+        document.getElementById('admin-panel').classList.add('hidden');
+        filterProducts();
+    }
             }
         });
 
