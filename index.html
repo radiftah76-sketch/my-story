@@ -215,7 +215,26 @@
                 <div class="md:col-span-2">
                     <button type="submit" id="publish-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition">نشر المنتج في المتجر (سحابياً)</button>
                 </div>
-            </form>
+        </form>
+
+            <!-- أداة توليد ونسخ كود المنتجات للمالك فقط -->
+            <div class="mt-6 pt-6 border-t dark:border-slate-800">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <label class="text-xs font-extrabold text-amber-500">
+                        كود المنتجات الجاهز للنسخ إلى index.html (يظهر للمالك فقط):
+                    </label>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="refreshStaticProductsCode()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                            تحديث الكود
+                        </button>
+                        <button type="button" onclick="copyStaticProductsCode()" id="copy-static-code-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition">
+                            نسخ الكود (Copy)
+                        </button>
+                    </div>
+                </div>
+                <textarea id="static-products-code-box" rows="6" readonly class="w-full font-mono text-xs bg-slate-950 text-emerald-400 border border-slate-700 rounded-xl p-3 focus:outline-none" placeholder="اضغط 'تحديث الكود' لتوليد كود المنتجات الحالية..."></textarea>
+                <p id="copy-status-msg" class="text-[11px] text-emerald-500 font-bold mt-1 hidden">تم نسخ الكود بنجاح! الصقه داخل مصفوفة staticProducts في ملف index.html.</p>
+            </div>
         </div>
     </section>
 
@@ -342,7 +361,11 @@
         let selectedModel = "all";
         let currentLang = "ar";
         let products = [];
+        const staticProducts = [
+    // الصق هنا قائمة المنتجات المنسوخة من لوحة المالك عندما تصبح جاهزة
+];
 
+products = [...staticProducts];
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
 
@@ -436,23 +459,96 @@
             boxes.forEach(b => { b.checked = !allChecked; });
         }
 
-        async function fetchProductsFromCloud() {
-            const spinner = document.getElementById('loading-spinner');
-            try {
-                const q = query(productsCol, orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-                products = [];
-                querySnapshot.forEach((docSnap) => {
-                    products.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                spinner.style.display = 'none';
-                filterProducts();
-            } catch (error) {
-                console.error("خطأ في جلب المنتجات:", error);
-                spinner.innerHTML = `<p class="text-red-500 text-sm">حدث خطأ في الاتصال بقاعدة البيانات السحابية.</p>`;
-            }
-        }
+       async function fetchProductsFromCloud() {
+    const spinner = document.getElementById('loading-spinner');
 
+    if (staticProducts.length > 0 && products.length === 0) {
+        products = [...staticProducts];
+    }
+    if (products.length > 0 && spinner) {
+        spinner.style.display = 'none';
+    }
+    filterProducts();
+
+    try {
+        const q = query(productsCol, orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+
+        const cloudProducts = [];
+        querySnapshot.forEach((docSnap) => {
+            cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        const mergedMap = new Map();
+
+        // 1. أولوية التحديث والتعديل للمنتجات القادمة من السحابة حسب المعرّف (id)
+        cloudProducts.forEach((item) => {
+            if (item && item.id) {
+                mergedMap.set(item.id, item);
+            }
+        });
+
+        // 2. الإبقاء على المنتجات الثابتة التي لم تُجلب بعد (مثلاً أثناء تأخر أو انقطاع الشبكة)
+        staticProducts.forEach((staticItem) => {
+            if (staticItem && staticItem.id && !mergedMap.has(staticItem.id)) {
+                mergedMap.set(staticItem.id, staticItem);
+            }
+        });
+
+        products = Array.from(mergedMap.values());
+
+        if (spinner) {
+            spinner.style.display = 'none';
+        }
+        filterProducts();
+    } catch (error) {
+        console.error("خطأ في جلب المنتجات:", error);
+        if (spinner) {
+            spinner.style.display = 'none';
+        }
+        if (products.length === 0 && staticProducts.length > 0) {
+            products = [...staticProducts];
+        }
+        filterProducts();
+    }
+}
+window.refreshStaticProductsCode = function() {
+    const box = document.getElementById('static-products-code-box');
+    if (!box) return;
+
+    const cleanList = products.map((p) => ({
+        id: p.id || "",
+        name: p.name || "",
+        price: Number(p.price) || 0,
+        models: Array.isArray(p.models) ? p.models : [],
+        desc: p.desc || "",
+        image: p.image || ""
+    }));
+
+    box.value = JSON.stringify(cleanList, null, 4);
+};
+
+window.copyStaticProductsCode = async function() {
+    const box = document.getElementById('static-products-code-box');
+    const msg = document.getElementById('copy-status-msg');
+    if (!box) return;
+
+    if (!box.value.trim()) {
+        refreshStaticProductsCode();
+    }
+
+    try {
+        await navigator.clipboard.writeText(box.value);
+    } catch (err) {
+        box.select();
+        document.execCommand('copy');
+    }
+
+    if (msg) {
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 4000);
+    }
+};
         window.openSideMenu = function() {
             renderSidebarContent();
             document.getElementById('side-menu-overlay').classList.remove('hidden');
