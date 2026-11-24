@@ -50,7 +50,7 @@
     <header class="glass-header text-white shadow-xl sticky top-0 z-50 border-b border-slate-800">
         <div class="container mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <button onclick="openSideMenu()" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 text-white p-2.5 rounded-xl transition shadow-md" title="القائمة وحسابي">
+                <button onclick="openSideMenu()" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 text-white p-2.5 rounded-xl transition shadow-md" title="القائمة">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
 
@@ -94,7 +94,7 @@
         </div>
     </header>
 
-    <!-- القائمة الجانبية -->
+    <!-- القائمة الجانبية (تحتوي على ملفي الشخصي ومشترياتي، وإذا كان المالك مسجلاً دخول تظهر قائمة من زار المتجر في الجانب) -->
     <div id="side-menu-overlay" onclick="closeSideMenu()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"></div>
     <aside id="side-menu-drawer" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white dark:bg-slate-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between border-l dark:border-slate-800">
         <div class="p-5 overflow-y-auto flex-1">
@@ -109,6 +109,34 @@
             </div>
 
             <div id="sidebar-user-card" class="bg-slate-100 dark:bg-slate-800/80 p-4 rounded-2xl mb-6 border dark:border-slate-700"></div>
+
+            <!-- قسم من زار المتجر يظهر في القائمة الجانبية للمالك فقط -->
+            <div id="sidebar-admin-visitors" class="hidden mb-6 bg-amber-500/5 dark:bg-slate-800/50 border border-amber-500/30 rounded-2xl p-3.5">
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <h4 class="font-black text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                        <span>من زار المتجر</span>
+                    </h4>
+                    <button type="button" onclick="fetchVisitorsFromCloud()" class="text-[10px] font-bold bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
+                        تحديث
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-center mb-3">
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2">
+                        <span class="text-[10px] text-slate-400 block">إجمالي الزيارات</span>
+                        <span id="stat-total-visits" class="text-sm font-black text-amber-500">0</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2">
+                        <span class="text-[10px] text-slate-400 block">زيارات اليوم</span>
+                        <span id="stat-today-visits" class="text-sm font-black text-emerald-500">0</span>
+                    </div>
+                </div>
+
+                <div id="admin-visitors-list" class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
+                    <p class="text-[11px] text-slate-400 text-center py-2">جاري تحميل الزوار...</p>
+                </div>
+            </div>
 
             <div>
                 <h4 class="font-extrabold text-sm mb-3 flex items-center justify-between">
@@ -147,14 +175,10 @@
         </div>
     </section>
 
-    <!-- الشعارات الثلاثة (Renault - Dacia - Nissan) واحد تحت واحد، وتظهر أسماء سيارات كل شعار عند الضغط عليه فقط -->
+    <!-- الشعارات الثلاثة (Renault - Dacia - Nissan بدون شعار) واحد تحت واحد، وتظهر سيارات كل شعار عند الضغط عليه فقط -->
     <section id="brands-showcase" class="container mx-auto px-4 pt-6 pb-2">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 shadow-sm">
-            <div class="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
-                <div>
-                    <h2 class="text-lg md:text-xl font-black text-slate-900 dark:text-white">اختر الشعار</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">اضغط على الشعار لإظهار سياراته والقطع الخاصة به</p>
-                </div>
+            <div class="flex justify-end pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
                 <button onclick="resetFilters()" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs transition" data-i18n="show_all">
                     عرض الكل
                 </button>
@@ -172,46 +196,6 @@
                 <div class="flex gap-2">
                     <button id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold">إلغاء التعديل</button>
                     <button onclick="logoutAdmin()" class="bg-rose-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold" data-i18n="logout">خروج</button>
-                </div>
-            </div>
-
-            <!-- قسم إحصائيات الزوار والأجهزة في لوحة المالك -->
-            <div class="bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-2xl p-4 space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-users-viewfinder text-amber-500"></i>
-                            <span>من زار المتجر (الأجهزة وحسابات المستخدمين)</span>
-                        </h3>
-                        <p class="text-[11px] text-slate-400">يظهر نوع الجهاز (iPhone، Samsung، Android، PC...) واسم/Gmail إذا كان الزائر مسجلاً حسابه في المتجر.</p>
-                    </div>
-                    <button type="button" onclick="fetchVisitorsFromCloud()" class="bg-slate-900 dark:bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-rotate"></i>
-                        <span>تحديث الزوار</span>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
-                        <span class="text-[11px] text-slate-400 block">إجمالي الزيارات</span>
-                        <span id="stat-total-visits" class="text-lg font-black text-amber-500">0</span>
-                    </div>
-                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
-                        <span class="text-[11px] text-slate-400 block">زيارات اليوم</span>
-                        <span id="stat-today-visits" class="text-lg font-black text-emerald-500">0</span>
-                    </div>
-                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
-                        <span class="text-[11px] text-slate-400 block">هواتف (iPhone / Android)</span>
-                        <span id="stat-mobile-visits" class="text-lg font-black text-blue-500">0</span>
-                    </div>
-                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
-                        <span class="text-[11px] text-slate-400 block">زوار بحساب / Gmail</span>
-                        <span id="stat-identified-visits" class="text-lg font-black text-purple-500">0</span>
-                    </div>
-                </div>
-
-                <div id="admin-visitors-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-                    <p class="text-xs text-slate-400 text-center py-3">جاري تحميل سجل الزوار...</p>
                 </div>
             </div>
 
@@ -404,7 +388,6 @@
         let selectedModel = "all";
         let currentLang = "ar";
         let products = [];
-        let visitorsList = [];
         let productImageIndex = {};
         let openedCarNames = new Set();
 
@@ -418,22 +401,19 @@
             {
                 id: "Renault",
                 name: "Renault",
-                subtitle: "Megane • Clio • Kangoo • Express • Symbol",
                 logo: "https://www.carlogos.org/car-logos/renault-logo.png",
                 cars: ["Megane", "Clio", "Kangoo", "Express", "Symbol"]
             },
             {
                 id: "Dacia",
                 name: "Dacia",
-                subtitle: "Dacia • Logan • Sandero • Duster • Dokker • Lodgy",
                 logo: "https://www.carlogos.org/car-logos/dacia-logo.png",
                 cars: ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"]
             },
             {
                 id: "Nissan",
                 name: "Nissan",
-                subtitle: "Nissan • Qashqai • Juke • Micra • Navara • X-Trail",
-                logo: "https://www.carlogos.org/car-logos/nissan-logo.png",
+                logo: null,
                 cars: ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"]
             }
         ];
@@ -463,27 +443,21 @@
         function detectDeviceAndBrowser() {
             const ua = navigator.userAgent || "";
             let deviceType = "جهاز كمبيوتر (PC)";
-            let deviceIcon = "fa-desktop";
 
             if (/iPhone/i.test(ua)) {
                 deviceType = "iPhone";
-                deviceIcon = "fa-mobile-screen-button";
             } else if (/iPad/i.test(ua)) {
                 deviceType = "iPad";
-                deviceIcon = "fa-tablet-screen-button";
             } else if (/Android/i.test(ua)) {
                 const samsungMatch = ua.match(/SM-[A-Z0-9]+|Galaxy\s?[A-Z0-9]+/i);
-                deviceType = samsungMatch ? `Samsung (${samsungMatch[0]})` : "Android Phone / Samsung";
-                deviceIcon = "fa-mobile-screen-button";
+                deviceType = samsungMatch ? `Samsung (${samsungMatch[0]})` : "Android / Samsung";
             } else if (/Windows/i.test(ua)) {
                 deviceType = "Windows PC";
-                deviceIcon = "fa-laptop";
             } else if (/Mac/i.test(ua)) {
                 deviceType = "Mac";
-                deviceIcon = "fa-laptop";
             }
 
-            let browser = "متصفح آخر";
+            let browser = "متصفح";
             if (/Edg/i.test(ua)) browser = "Edge";
             else if (/OPR|Opera/i.test(ua)) browser = "Opera";
             else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Browser";
@@ -491,7 +465,7 @@
             else if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) browser = "Safari";
             else if (/Firefox/i.test(ua)) browser = "Firefox";
 
-            return { deviceType, deviceIcon, browser };
+            return { deviceType, browser };
         }
 
         async function recordVisitToCloud(emailOverride = null, nameOverride = null) {
@@ -537,63 +511,61 @@
                 const items = [];
                 snap.forEach(d => items.push({ id: d.id, ...d.data() }));
                 items.sort((a, b) => new Date(b.visitedAt || 0) - new Date(a.visitedAt || 0));
-                visitorsList = items;
 
                 const todayStr = new Date().toISOString().slice(0, 10);
                 const totalCount = items.length;
                 const todayCount = items.filter(v => (v.visitedAt || "").startsWith(todayStr)).length;
-                const mobileCount = items.filter(v => /iPhone|iPad|Android|Samsung/i.test(v.deviceType || "")).length;
-                const identifiedCount = items.filter(v => Boolean(v.userEmail || v.userName)).length;
 
                 document.getElementById("stat-total-visits").innerText = totalCount;
                 document.getElementById("stat-today-visits").innerText = todayCount;
-                document.getElementById("stat-mobile-visits").innerText = mobileCount;
-                document.getElementById("stat-identified-visits").innerText = identifiedCount;
 
                 if (items.length === 0) {
-                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">لا توجد زيارات مسجلة بعد.</p>`;
+                    listEl.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">لا توجد زيارات مسجلة بعد.</p>`;
                     return;
                 }
 
-                listEl.innerHTML = items.slice(0, 40).map(v => {
+                listEl.innerHTML = items.slice(0, 30).map(v => {
                     const isMobile = /iPhone|iPad|Android|Samsung/i.test(v.deviceType || "");
                     const iconClass = isMobile ? "fa-mobile-screen-button text-emerald-500" : "fa-desktop text-blue-500";
                     const timeFormatted = v.visitedAt ? new Date(v.visitedAt).toLocaleString("ar-MA", { dateStyle: "short", timeStyle: "short" }) : "";
                     const identityBadge = v.userEmail
-                        ? `<span class="text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${v.userEmail}</span>`
-                        : `<span class="text-[10px] text-slate-400">زائر غير مسجل بحساب</span>`;
+                        ? `<span class="text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded block mt-0.5 truncate">${v.userEmail}</span>`
+                        : `<span class="text-[10px] text-slate-400 block mt-0.5">زائر بدون حساب</span>`;
 
                     return `
-                        <div class="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2.5 text-xs">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                                    <i class="fa-solid ${iconClass}"></i>
+                        <div class="flex items-center justify-between gap-2 bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2 text-xs">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid ${iconClass} text-xs"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="font-black text-slate-800 dark:text-slate-100 truncate">${v.deviceType || "جهاز غير معروف"} <span class="text-[10px] font-normal text-slate-400">(${v.browser || ""})</span></p>
-                                    <div class="mt-0.5">${identityBadge}</div>
+                                    <p class="font-bold text-slate-800 dark:text-slate-100 truncate text-[11px]">${v.deviceType || "جهاز"} <span class="text-[10px] font-normal text-slate-400">(${v.browser || ""})</span></p>
+                                    ${identityBadge}
                                 </div>
                             </div>
-                            <span class="text-[10px] text-slate-400 font-bold shrink-0">${timeFormatted}</span>
+                            <span class="text-[9px] text-slate-400 font-bold shrink-0">${timeFormatted}</span>
                         </div>
                     `;
                 }).join("");
             } catch (err) {
                 console.error("خطأ في جلب الزوار:", err);
-                listEl.innerHTML = `<p class="text-xs text-rose-500 text-center py-3">تعذر جلب سجل الزوار.</p>`;
+                listEl.innerHTML = `<p class="text-[11px] text-rose-500 text-center py-2">تعذر جلب سجل الزوار.</p>`;
             }
         }
 
         onAuthStateChanged(auth, (user) => {
+            const sidebarVisitors = document.getElementById('sidebar-admin-visitors');
             if (user) {
                 isAdmin = true;
                 document.getElementById('admin-panel').classList.remove('hidden');
+                if (sidebarVisitors) sidebarVisitors.classList.remove('hidden');
                 renderAdminSortList();
                 fetchVisitorsFromCloud();
                 filterProducts();
             } else {
                 isAdmin = false;
                 document.getElementById('admin-panel').classList.add('hidden');
+                if (sidebarVisitors) sidebarVisitors.classList.add('hidden');
                 filterProducts();
             }
         });
@@ -1085,6 +1057,9 @@
 
         window.openSideMenu = function() {
             renderSidebarContent();
+            if (isAdmin) {
+                fetchVisitorsFromCloud();
+            }
             document.getElementById('side-menu-overlay').classList.remove('hidden');
             const drawer = document.getElementById('side-menu-drawer');
             drawer.classList.remove('translate-x-full', '-translate-x-full');
@@ -1199,7 +1174,7 @@
             filterProducts();
         }
 
-        // عرض الشعارات الثلاثة واحد تحت واحد، وإظهار سيارات كل شعار عند النقر عليه فقط
+        // عرض الشعارات الثلاثة واحد تحت واحد (بدون شعار لنيسان بل اسمه فقط، وبدون جملة فرعية تحت الشعار)
         function renderBrandsStack() {
             const container = document.getElementById('brands-stack');
             if (!container) return;
@@ -1210,12 +1185,24 @@
                     ? 'active border-amber-500'
                     : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
 
+                const visualBox = brand.logo
+                    ? `
+                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 border border-slate-700 flex items-center justify-center p-2.5 shrink-0 shadow">
+                            <img src="${brand.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${brand.name}" class="w-full h-full object-contain">
+                        </div>
+                    `
+                    : `
+                        <div class="px-4 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center shrink-0">
+                            <span class="text-sm md:text-base font-black text-amber-600 dark:text-amber-400 tracking-wide">${brand.name}</span>
+                        </div>
+                    `;
+
                 const carsPanelHtml = isExpanded ? `
                     <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2.5" onclick="event.stopPropagation()">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-black text-amber-600 dark:text-amber-400">سيارات ${brand.name}:</span>
+                            <span class="text-xs font-black text-amber-600 dark:text-amber-400">${brand.name}</span>
                             <button type="button" onclick="selectCarInsideBrand('${brand.id}', 'all')" class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${selectedModel === 'all' ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
-                                كل ${brand.name}
+                                ${translations[currentLang].all_models}
                             </button>
                         </div>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
@@ -1235,13 +1222,8 @@
                     <div onclick="toggleBrandGroup('${brand.id}')" class="brand-card ${activeCardStyle} bg-slate-50 dark:bg-slate-800/70 border rounded-2xl p-4 transition cursor-pointer">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3.5">
-                                <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 border border-slate-700 flex items-center justify-center p-2.5 shrink-0 shadow">
-                                    <img src="${brand.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${brand.name}" class="w-full h-full object-contain">
-                                </div>
-                                <div>
-                                    <h3 class="text-base md:text-lg font-black text-slate-900 dark:text-white">${brand.name}</h3>
-                                    <p class="text-[11px] text-slate-500 dark:text-slate-400">${brand.subtitle}</p>
-                                </div>
+                                ${visualBox}
+                                <h3 class="text-base md:text-lg font-black text-slate-900 dark:text-white">${brand.name}</h3>
                             </div>
                             <span class="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border dark:border-slate-700 flex items-center justify-center text-xs text-amber-500 shrink-0">
                                 <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
