@@ -168,7 +168,7 @@
         </div>
     </section>
 
-    <!-- لوحة تحكم المالك (إضافة وتعديل مع اختيار عدة موديلات) -->
+    <!-- لوحة تحكم المالك (إضافة وتعديل مع تعدد الصور وجميع السيارات وموديلاتها) -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
         <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
@@ -190,24 +190,38 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اختيار موديل واحد أو عدة موديلات (مثال: Megane + Clio + Dacia) -->
-                <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-3.5">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                        <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400">
-                            الموديلات المناسبة للقطعة (يمكنك اختيار أكثر من سيارة في نفس الوقت):
-                        </label>
-                        <button type="button" onclick="selectAllModelsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
-                            تحديد الكل
+                <!-- اختيار اسم السيارة وموديلاتها / أجيالها (خاص بالمالك فقط) -->
+                <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
+                                1. اختر اسم السيارة (يمكنك اختيار سيارة واحدة أو أكثر):
+                            </label>
+                            <span class="text-[11px] text-slate-400">ستظهر فوراً موديلات وأجيال كل سيارة اخترتها لتحديدها بدقة (خاص بإعدادات المالك فقط).</span>
+                        </div>
+                        <button type="button" onclick="selectAllCarsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
+                            تحديد / إلغاء كل السيارات
                         </button>
                     </div>
-                    <div id="form-models-checkboxes" class="flex flex-wrap gap-2"></div>
+
+                    <div id="form-cars-checkboxes" class="flex flex-wrap gap-2"></div>
+
+                    <div id="form-submodels-container" class="hidden pt-3 border-t dark:border-slate-700 space-y-3">
+                        <label class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block">
+                            2. حدد الموديلات / الأجيال للسيارات المختارة:
+                        </label>
+                        <div id="form-submodels-list" class="space-y-3"></div>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold mb-1">صورة المنتج:</label>
-                    <input type="file" id="prod-image" accept="image/*" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
-                    <p class="text-[10px] text-slate-400 mt-1">اتركه فارغاً إذا لم ترغب بتغيير الصورة القديمة عند التعديل.</p>
+                <!-- تعدد الصور (2 أو 3 صور للمنتج الواحد) -->
+                <div class="bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-3.5">
+                    <label class="block text-xs font-bold mb-1">صور المنتج (2 إلى 3 صور كحد أقصى):</label>
+                    <input type="file" id="prod-image" accept="image/*" multiple onchange="previewSelectedImages(this)" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
+                    <p class="text-[10px] text-slate-400 mt-1">يمكنك تحديد صورتين أو ثلاث صور دفعة واحدة (الصورة الأولى هي الرئيسية في المتجر). اتركه فارغاً عند التعديل للإبقاء على الصور الحالية.</p>
+                    <div id="prod-image-preview" class="flex flex-wrap gap-2 mt-2.5"></div>
                 </div>
+
                 <div>
                     <label class="block text-xs font-bold mb-1">الوصف:</label>
                     <input type="text" id="prod-desc" placeholder="تفاصيل القطعة..." required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
@@ -342,6 +356,7 @@
         let selectedModel = "all";
         let currentLang = "ar";
         let products = [];
+        let productImageIndex = {};
 
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
@@ -397,7 +412,7 @@
             }
         };
 
-        // المربعات أسفل شعار Renault: موديلات Renault المغربية + Dacia بداخل مربع بنفس الشكل
+        // المربعات أسفل شعار Renault في واجهة الموقع (تبقى بأسماء السيارات المعتادة دون تفاصيل الموديلات الفرعية)
         const carModelBoxes = [
             { id: "all", name: "الكل", sub: "Renault & Dacia", icon: "fa-border-all", logo: null },
             { id: "Megane", name: "Megane", sub: "Renault", icon: "fa-car", logo: null },
@@ -413,25 +428,142 @@
             { id: "Lodgy", name: "Lodgy", sub: "Dacia", icon: "fa-shuttle-van", logo: null }
         ];
 
-        const selectableProductModels = ["Megane", "Clio", "Kangoo", "Express", "Symbol", "Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
+        // جميع السيارات وموديلاتها / أجيالها في لوحة تحكم المالك فقط
+        const carModelsCatalog = {
+            "Megane": ["Megane 1", "Megane 2", "Megane 3", "Megane 4", "Megane E-Tech"],
+            "Clio": ["Clio 1", "Clio 2", "Clio 3", "Clio 4", "Clio 5", "Clio 6", "Clio 7", "Clio 8"],
+            "Kangoo": ["Kangoo 1", "Kangoo 2", "Kangoo 3"],
+            "Express": ["Express", "Express Van"],
+            "Symbol": ["Symbol 1", "Symbol 2", "Symbol 3"],
+            "Dacia": ["Dacia Classic", "Dacia New Gen"],
+            "Logan": ["Logan 1", "Logan 2", "Logan 3"],
+            "Sandero": ["Sandero 1", "Sandero 2", "Sandero 3", "Sandero Stepway"],
+            "Duster": ["Duster 1", "Duster 2", "Duster 3"],
+            "Dokker": ["Dokker", "Dokker Van", "Dokker Stepway"],
+            "Lodgy": ["Lodgy", "Lodgy Stepway"]
+        };
 
-        function renderModelCheckboxesInForm(selectedList = []) {
-            const container = document.getElementById('form-models-checkboxes');
-            container.innerHTML = selectableProductModels.map(m => {
-                const checked = selectedList.includes(m) ? 'checked' : '';
+        const selectableProductModels = Object.keys(carModelsCatalog);
+
+        function findCarForSubmodel(submodel) {
+            for (const [carName, list] of Object.entries(carModelsCatalog)) {
+                if (list.includes(submodel)) return carName;
+            }
+            return null;
+        }
+
+        function renderModelCheckboxesInForm(selectedCars = [], selectedSubmodels = []) {
+            const carsContainer = document.getElementById('form-cars-checkboxes');
+            const derivedCars = new Set(selectedCars);
+            selectedSubmodels.forEach(sub => {
+                const parentCar = findCarForSubmodel(sub);
+                if (parentCar) derivedCars.add(parentCar);
+            });
+
+            carsContainer.innerHTML = selectableProductModels.map(car => {
+                const checked = derivedCars.has(car) ? 'checked' : '';
                 return `
-                    <label class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 border dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer hover:border-amber-500">
-                        <input type="checkbox" name="prod-models" value="${m}" ${checked} class="accent-amber-500 rounded">
-                        <span>${m}</span>
+                    <label class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 border dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer hover:border-amber-500 transition">
+                        <input type="checkbox" name="prod-cars" value="${car}" ${checked} onchange="updateSubmodelsSections()" class="accent-amber-500 rounded">
+                        <span>${car}</span>
                     </label>
+                `;
+            }).join('');
+
+            updateSubmodelsSections(selectedSubmodels);
+        }
+
+        window.updateSubmodelsSections = function(presetSubmodels = null) {
+            const activeSubmodels = presetSubmodels !== null
+                ? new Set(presetSubmodels)
+                : new Set(Array.from(document.querySelectorAll('input[name="prod-submodels"]:checked')).map(cb => cb.value));
+
+            const checkedCars = Array.from(document.querySelectorAll('input[name="prod-cars"]:checked')).map(cb => cb.value);
+            const container = document.getElementById('form-submodels-container');
+            const listEl = document.getElementById('form-submodels-list');
+
+            if (checkedCars.length === 0) {
+                container.classList.add('hidden');
+                listEl.innerHTML = '';
+                return;
+            }
+
+            container.classList.remove('hidden');
+            listEl.innerHTML = checkedCars.map(car => {
+                const subs = carModelsCatalog[car] || [];
+                return `
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-black text-slate-800 dark:text-slate-100">موديلات ${car}:</span>
+                            <button type="button" onclick="toggleCarSubmodels('${car}')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline">
+                                تحديد الكل
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${subs.map(sub => {
+                                const isChecked = activeSubmodels.has(sub) ? 'checked' : '';
+                                return `
+                                    <label class="inline-flex items-center gap-1 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer hover:border-emerald-500">
+                                        <input type="checkbox" name="prod-submodels" data-car="${car}" value="${sub}" ${isChecked} class="accent-emerald-500 rounded">
+                                        <span>${sub}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
                 `;
             }).join('');
         }
 
-        window.selectAllModelsInForm = function() {
-            const boxes = document.querySelectorAll('input[name="prod-models"]');
+        window.toggleCarSubmodels = function(car) {
+            const boxes = document.querySelectorAll(`input[name="prod-submodels"][data-car="${car}"]`);
             const allChecked = Array.from(boxes).every(b => b.checked);
             boxes.forEach(b => { b.checked = !allChecked; });
+        }
+
+        window.selectAllCarsInForm = function() {
+            const boxes = document.querySelectorAll('input[name="prod-cars"]');
+            const allChecked = Array.from(boxes).every(b => b.checked);
+            boxes.forEach(b => { b.checked = !allChecked; });
+            updateSubmodelsSections();
+        }
+
+        window.previewSelectedImages = function(input) {
+            const previewEl = document.getElementById('prod-image-preview');
+            previewEl.innerHTML = '';
+            if (!input.files || input.files.length === 0) return;
+
+            if (input.files.length > 3) {
+                alert('يمكنك اختيار 3 صور كحد أقصى لكل منتج. سيتم اعتماد أول 3 صور فقط.');
+            }
+
+            const filesToShow = Array.from(input.files).slice(0, 3);
+            filesToShow.forEach((file, idx) => {
+                const url = URL.createObjectURL(file);
+                previewEl.innerHTML += `
+                    <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-amber-500/60">
+                        <img src="${url}" class="w-full h-full object-cover">
+                        <span class="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-white text-center font-bold">${idx === 0 ? 'رئيسية' : 'صورة ' + (idx + 1)}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function getProductImages(p) {
+            if (Array.isArray(p.images) && p.images.length > 0) {
+                return p.images.slice(0, 3);
+            }
+            if (p.image) {
+                return [p.image];
+            }
+            return ["https://via.placeholder.com/300"];
+        }
+
+        window.cycleProductImage = function(productId, direction, totalImages) {
+            const currentIdx = productImageIndex[productId] || 0;
+            const nextIdx = (currentIdx + direction + totalImages) % totalImages;
+            productImageIndex[productId] = nextIdx;
+            filterProducts();
         }
 
         async function fetchProductsFromCloud() {
@@ -531,7 +663,6 @@
             localStorage.setItem('auto_order_history', JSON.stringify(orderHistory));
             return newOrder.id;
         }
-          
 
         window.toggleDarkMode = function() {
             document.documentElement.classList.toggle('dark');
@@ -608,27 +739,33 @@
             const filtered = products.filter(p => {
                 let matchModel = true;
                 if (selectedModel !== 'all') {
-                    const pModels = Array.isArray(p.models) ? p.models : [];
-                    const matchesSelectedBox =
-                        pModels.includes(selectedModel) ||
+                    const pCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
+                    const pSubmodels = Array.isArray(p.submodels) ? p.submodels : [];
+                    const matchesCarBox =
+                        pCars.includes(selectedModel) ||
                         p.brand === selectedModel ||
+                        pSubmodels.some(sub => sub.toLowerCase().includes(selectedModel.toLowerCase())) ||
                         (p.desc && p.desc.toLowerCase().includes(selectedModel.toLowerCase()));
 
                     if (selectedModel === 'Dacia') {
                         const daciaList = ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
-                        const matchesDaciaGroup = pModels.some(m => daciaList.includes(m));
-                        matchModel = matchesSelectedBox || matchesDaciaGroup;
+                        const matchesDaciaGroup =
+                            pCars.some(m => daciaList.includes(m)) ||
+                            pSubmodels.some(sub => daciaList.some(d => sub.toLowerCase().includes(d.toLowerCase())));
+                        matchModel = matchesCarBox || matchesDaciaGroup;
                     } else {
-                        matchModel = matchesSelectedBox;
+                        matchModel = matchesCarBox;
                     }
                 }
 
-                const modelsText = Array.isArray(p.models) ? p.models.join(' ').toLowerCase() : '';
+                const carsText = Array.isArray(p.cars) ? p.cars.join(' ').toLowerCase() : '';
+                const subsText = Array.isArray(p.submodels) ? p.submodels.join(' ').toLowerCase() : '';
                 const matchSearch =
                     !queryText ||
                     (p.name && p.name.toLowerCase().includes(queryText)) ||
                     (p.desc && p.desc.toLowerCase().includes(queryText)) ||
-                    modelsText.includes(queryText);
+                    carsText.includes(queryText) ||
+                    subsText.includes(queryText);
 
                 return matchModel && matchSearch;
             });
@@ -646,6 +783,10 @@
 
             list.forEach(p => {
                 const isComp = compareList.includes(p.id);
+                const imgs = getProductImages(p);
+                const activeIdx = Math.min(productImageIndex[p.id] || 0, imgs.length - 1);
+                const activeImg = imgs[activeIdx];
+
                 const adminButtons = isAdmin ? `
                     <div class="grid grid-cols-2 gap-2 mt-2">
                         <button onclick="prepareEditProduct('${p.id}')" class="bg-blue-500/10 text-blue-500 font-bold py-2 rounded-xl text-xs"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
@@ -653,23 +794,44 @@
                     </div>
                 ` : '';
 
-                const modelsBadges = Array.isArray(p.models) && p.models.length
-                    ? p.models.map(m => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${m}</span>`).join(' ')
-                    : `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">Renault</span>`;
+                // في واجهة الزبائن تظهر أسماء السيارات فقط، بينما تظهر تفاصيل الموديلات الفرعية للمالك فقط عند تسجيل دخوله
+                const publicCars = Array.isArray(p.cars) && p.cars.length
+                    ? p.cars
+                    : (Array.isArray(p.models) && p.models.length ? p.models : ["Renault"]);
+
+                const adminSubmodelsBadges = isAdmin && Array.isArray(p.submodels) && p.submodels.length
+                    ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.submodels.map(sub => `<span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded">${sub}</span>`).join('')}</div>`
+                    : '';
+
+                const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
+
+                const galleryControls = imgs.length > 1 ? `
+                    <button type="button" onclick="cycleProductImage('${p.id}', -1, ${imgs.length})" class="absolute top-1/2 right-2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs transition" title="الصورة السابقة">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button type="button" onclick="cycleProductImage('${p.id}', 1, ${imgs.length})" class="absolute top-1/2 left-2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs transition" title="الصورة التالية">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div class="absolute bottom-2 inset-x-0 flex justify-center gap-1.5">
+                        ${imgs.map((_, dotIdx) => `<span class="w-2 h-2 rounded-full ${dotIdx === activeIdx ? 'bg-amber-400' : 'bg-white/60'}"></span>`).join('')}
+                    </div>
+                ` : '';
 
                 grid.innerHTML += `
                     <div class="product-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm">
                         <div>
                             <div class="relative">
-                                <img src="${p.image || 'https://via.placeholder.com/300'}" class="w-full aspect-square object-cover">
+                                <img src="${activeImg}" class="w-full aspect-square object-cover">
+                                ${galleryControls}
                                 <button onclick="toggleCompare('${p.id}')" class="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 w-8 h-8 rounded-full shadow flex items-center justify-center">
                                     <i class="fa-solid fa-code-compare ${isComp ? 'text-amber-500' : 'text-slate-400'} text-xs"></i>
                                 </button>
                             </div>
                             <div class="p-4">
                                 <div class="flex flex-wrap items-center gap-1.5 mb-1">
-                                    ${modelsBadges}
+                                    ${carBadges}
                                 </div>
+                                ${adminSubmodelsBadges}
                                 <h3 class="text-base font-bold mt-1 mb-1">${p.name}</h3>
                                 <p class="text-slate-500 text-xs mb-3">${p.desc || ''}</p>
                                 <div class="text-lg font-black text-slate-900 dark:text-white">${p.price} DH</div>
@@ -703,18 +865,19 @@
         window.openCartModal = function() {
             const list = document.getElementById('cart-items-list');
             let total = 0;
-           window.removeCartItemAt = function(idx) {
-    if (typeof cartItems !== 'undefined' && Array.isArray(cartItems)) {
-        cartItems.splice(idx, 1);
-        const countEl = document.getElementById('cart-count');
-        if (countEl) countEl.innerText = cartItems.length;
-        if (typeof openCartModal === 'function') {
-            openCartModal();
-        }
-    }
-}; list.innerHTML = cartItems.length ? cartItems.map((it, i) => {
+            window.removeCartItemAt = function(idx) {
+                if (typeof cartItems !== 'undefined' && Array.isArray(cartItems)) {
+                    cartItems.splice(idx, 1);
+                    const countEl = document.getElementById('cart-count');
+                    if (countEl) countEl.innerText = cartItems.length;
+                    if (typeof openCartModal === 'function') {
+                        openCartModal();
+                    }
+                }
+            };
+            list.innerHTML = cartItems.length ? cartItems.map((it, i) => {
                 total += Number(it.price);
-             return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl"><div><p class="font-bold text-xs">${it.name}</p><p class="text-xs text-amber-500">${it.price} DH</p></div><button type="button" onclick="window.removeCartItemAt(${i})" class="text-rose-500 hover:text-rose-600 p-1"><i class="fa-solid fa-trash"></i></button></div>`;
+                return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl"><div><p class="font-bold text-xs">${it.name}</p><p class="text-xs text-amber-500">${it.price} DH</p></div><button type="button" onclick="window.removeCartItemAt(${i})" class="text-rose-500 hover:text-rose-600 p-1"><i class="fa-solid fa-trash"></i></button></div>`;
             }).join('') : '<p class="text-center text-slate-400 py-4 text-xs">السلة فارغة</p>';
             document.getElementById('cart-total-price').innerText = total + ' DH';
             document.getElementById('cart-modal').classList.remove('hidden');
@@ -834,45 +997,38 @@
         if (window.location.search.includes('admin')) {
             setTimeout(() => { openAdminModal(); }, 500);
         }
-async function compressImageFile(file, maxWidth = 800, quality = 0.72) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
 
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-
-        resolve(canvas.toDataURL("image/jpeg", quality));
-      };
-
-      img.onerror = () => reject(new Error("تعذر قراءة الصورة."));
-      img.src = event.target.result;
-    };
-
-    reader.onerror = () => reject(new Error("تعذر قراءة الملف."));
-    reader.readAsDataURL(file);
-  });
-}
-        function convertFileToBase64(file) {
+        async function compressImageFile(file, maxWidth = 750, quality = 0.68) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
+
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+
+                        const canvas = document.createElement("canvas");
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        resolve(canvas.toDataURL("image/jpeg", quality));
+                    };
+
+                    img.onerror = () => reject(new Error("تعذر قراءة الصورة."));
+                    img.src = event.target.result;
+                };
+
+                reader.onerror = () => reject(new Error("تعذر قراءة الملف."));
                 reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
             });
         }
 
@@ -884,8 +1040,19 @@ async function compressImageFile(file, maxWidth = 800, quality = 0.72) {
             document.getElementById('prod-name').value = p.name;
             document.getElementById('prod-price').value = p.price;
             document.getElementById('prod-desc').value = p.desc || '';
+            document.getElementById('prod-image').value = '';
 
-            renderModelCheckboxesInForm(Array.isArray(p.models) ? p.models : []);
+            const existingCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
+            const existingSubs = Array.isArray(p.submodels) ? p.submodels : [];
+            renderModelCheckboxesInForm(existingCars, existingSubs);
+
+            const currentImgs = getProductImages(p);
+            document.getElementById('prod-image-preview').innerHTML = currentImgs.map((src, idx) => `
+                <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-400/50">
+                    <img src="${src}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-white text-center font-bold">${idx === 0 ? 'رئيسية' : 'صورة ' + (idx + 1)}</span>
+                </div>
+            `).join('');
 
             document.getElementById('admin-form-title').innerText = "تعديل المنتج المحدد";
             document.getElementById('publish-btn').innerText = "تحديث بيانات المنتج في السحابة";
@@ -897,7 +1064,8 @@ async function compressImageFile(file, maxWidth = 800, quality = 0.72) {
         window.resetAdminForm = function() {
             document.getElementById('edit-product-id').value = "";
             document.querySelector('#admin-panel form').reset();
-            renderModelCheckboxesInForm([]);
+            document.getElementById('prod-image-preview').innerHTML = '';
+            renderModelCheckboxesInForm([], []);
             document.getElementById('admin-form-title').innerText = "لوحة تحكم المالك - إضافة منتج جديد";
             document.getElementById('publish-btn').innerText = "نشر المنتج في المتجر (سحابياً)";
             document.getElementById('cancel-edit-btn').classList.add('hidden');
@@ -909,18 +1077,24 @@ async function compressImageFile(file, maxWidth = 800, quality = 0.72) {
             const btn = document.getElementById('publish-btn');
             btn.disabled = true;
 
-            const selectedModels = Array.from(document.querySelectorAll('input[name="prod-models"]:checked')).map(cb => cb.value);
-            const mainBrand = selectedModels.some(m => ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"].includes(m)) && !selectedModels.some(m => ["Megane", "Clio", "Kangoo", "Express", "Symbol"].includes(m))
+            const selectedCars = Array.from(document.querySelectorAll('input[name="prod-cars"]:checked')).map(cb => cb.value);
+            const selectedSubmodels = Array.from(document.querySelectorAll('input[name="prod-submodels"]:checked')).map(cb => cb.value);
+
+            const mainBrand = selectedCars.some(m => ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"].includes(m)) && !selectedCars.some(m => ["Megane", "Clio", "Kangoo", "Express", "Symbol"].includes(m))
                 ? "Dacia"
                 : "Renault";
 
             try {
                 const fileInput = document.getElementById('prod-image');
-                let imageUrl = null;
-                
-               if (fileInput.files && fileInput.files[0]) {
-    imageUrl = await compressImageFile(fileInput.files[0], 800, 0.72);
-}
+                let compressedImages = [];
+
+                if (fileInput.files && fileInput.files.length > 0) {
+                    const selectedFiles = Array.from(fileInput.files).slice(0, 3);
+                    for (const file of selectedFiles) {
+                        const compressed = await compressImageFile(file, 750, 0.68);
+                        compressedImages.push(compressed);
+                    }
+                }
 
                 if (editId) {
                     btn.innerText = "جاري تحديث المنتج في السحابة...";
@@ -928,24 +1102,34 @@ async function compressImageFile(file, maxWidth = 800, quality = 0.72) {
                     const updateData = {
                         name: document.getElementById('prod-name').value,
                         brand: mainBrand,
-                        models: selectedModels,
+                        cars: selectedCars,
+                        models: selectedCars,
+                        submodels: selectedSubmodels,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value
                     };
-                    if (imageUrl) updateData.image = imageUrl;
+                    if (compressedImages.length > 0) {
+                        updateData.images = compressedImages;
+                        updateData.image = compressedImages[0];
+                    }
 
                     await updateDoc(productRef, updateData);
                     alert('تم تحديث المنتج بنجاح!');
                 } else {
                     btn.innerText = "جاري النشر في سحابة Firebase...";
-                    imageUrl = imageUrl || "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80";
+                    if (compressedImages.length === 0) {
+                        compressedImages = ["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80"];
+                    }
                     const newProductData = {
                         name: document.getElementById('prod-name').value,
                         brand: mainBrand,
-                        models: selectedModels,
+                        cars: selectedCars,
+                        models: selectedCars,
+                        submodels: selectedSubmodels,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value,
-                        image: imageUrl,
+                        images: compressedImages,
+                        image: compressedImages[0],
                         createdAt: new Date()
                     };
                     await addDoc(productsCol, newProductData);
@@ -976,7 +1160,7 @@ async function compressImageFile(file, maxWidth = 800, quality = 0.72) {
             }
         }
 
-        renderModelCheckboxesInForm([]);
+        renderModelCheckboxesInForm([], []);
         renderSidebarContent();
         renderModelBoxes();
         fetchProductsFromCloud();
