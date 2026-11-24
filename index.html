@@ -188,25 +188,20 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اختيار اسم السيارة، الموديلات/الأجيال، وخيار Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
+                <!-- النقر على اسم السيارة لإظهار موديلاتها + اختيار الموديل و Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div>
-                            <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
-                                1. اختر اسم السيارة (يمكنك اختيار سيارة واحدة أو أكثر):
-                            </label>
-                            <span class="text-[11px] text-slate-400">عند اختيار موديل مثل Clio 5 وتحديد Ancien Model أو Nouveau Model، سيظهر في خانة المنتج كما اخترته دون إضافة اسم السيارة الرئيسي تلقائياً.</span>
-                        </div>
-                        <button type="button" onclick="selectAllCarsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
-                            تحديد / إلغاء كل السيارات
-                        </button>
+                    <div>
+                        <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
+                            1. انقر على اسم السيارة لإظهار موديلاتها:
+                        </label>
+                        <span class="text-[11px] text-slate-400">عند النقر على اسم سيارة مثل Clio أو Qashqai تظهر موديلاتها؛ وعند اختيار موديل محدد مثل Clio 5 يظهر في خانة المنتج وحده دون اسم السيارة الرئيسي.</span>
                     </div>
 
-                    <div id="form-cars-checkboxes" class="flex flex-wrap gap-2"></div>
+                    <div id="form-cars-buttons" class="flex flex-wrap gap-2"></div>
 
                     <div id="form-submodels-container" class="hidden pt-3 border-t dark:border-slate-700 space-y-3">
                         <label class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block">
-                            2. حدد الموديل / الجيل واختر (Ancien Model أو Nouveau Model):
+                            2. اختر الموديل / الجيل وحدد (Ancien Model أو Nouveau Model):
                         </label>
                         <div id="form-submodels-list" class="space-y-3"></div>
                     </div>
@@ -370,6 +365,7 @@
         let currentLang = "ar";
         let products = [];
         let productImageIndex = {};
+        let openedCarNames = new Set();
 
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
@@ -471,22 +467,60 @@
 
         const selectableProductModels = Object.keys(carModelsCatalog);
 
-        function renderModelCheckboxesInForm(selectedCars = [], selectedSubmodels = [], selectedEraBySubmodel = {}) {
-            const carsContainer = document.getElementById('form-cars-checkboxes');
-            // لا نضيف اسم السيارة الرئيسي تلقائياً عند اختيار موديل فرعي مثل Clio 5، بل نعتمد فقط ما تم اختياره صراحة
-            const explicitCars = new Set(Array.isArray(selectedCars) ? selectedCars : []);
+        function findCarForSubmodel(submodel) {
+            for (const [carName, list] of Object.entries(carModelsCatalog)) {
+                if (list.includes(submodel)) return carName;
+            }
+            return null;
+        }
 
-            carsContainer.innerHTML = selectableProductModels.map(car => {
-                const checked = explicitCars.has(car) ? 'checked' : '';
+        function renderModelCheckboxesInForm(selectedSubmodels = [], selectedEraBySubmodel = {}) {
+            openedCarNames = new Set();
+            selectedSubmodels.forEach(sub => {
+                const parentCar = findCarForSubmodel(sub);
+                if (parentCar) openedCarNames.add(parentCar);
+            });
+
+            renderCarSelectorButtons(selectedSubmodels);
+            updateSubmodelsSections(selectedSubmodels, selectedEraBySubmodel);
+        }
+
+        function renderCarSelectorButtons(currentSelectedSubs = null) {
+            const subsSet = currentSelectedSubs !== null
+                ? new Set(currentSelectedSubs)
+                : new Set(Array.from(document.querySelectorAll('input[name="prod-submodels"]:checked')).map(cb => cb.value));
+
+            const buttonsContainer = document.getElementById('form-cars-buttons');
+            buttonsContainer.innerHTML = selectableProductModels.map(car => {
+                const isOpened = openedCarNames.has(car);
+                const carSubs = carModelsCatalog[car] || [];
+                const selectedCount = carSubs.filter(s => subsSet.has(s)).length;
+
+                const activeClasses = isOpened
+                    ? 'bg-amber-500 text-slate-950 border-amber-500 shadow'
+                    : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 hover:border-amber-500';
+
+                const countBadge = selectedCount > 0
+                    ? `<span class="bg-slate-950 text-amber-400 text-[10px] font-black px-1.5 py-0.2 rounded-full">${selectedCount}</span>`
+                    : '';
+
                 return `
-                    <label class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 border dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer hover:border-amber-500 transition">
-                        <input type="checkbox" name="prod-cars" value="${car}" ${checked} onchange="updateSubmodelsSections()" class="accent-amber-500 rounded">
+                    <button type="button" onclick="toggleCarModelsPanel('${car}')" class="inline-flex items-center gap-1.5 border px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer ${activeClasses}">
                         <span>${car}</span>
-                    </label>
+                        ${countBadge}
+                    </button>
                 `;
             }).join('');
+        }
 
-            updateSubmodelsSections(selectedSubmodels, selectedEraBySubmodel);
+        window.toggleCarModelsPanel = function(car) {
+            if (openedCarNames.has(car)) {
+                openedCarNames.delete(car);
+            } else {
+                openedCarNames.add(car);
+            }
+            renderCarSelectorButtons();
+            updateSubmodelsSections();
         }
 
         window.toggleSubmodelEraRow = function(submodel) {
@@ -500,6 +534,7 @@
                 eraBox.classList.add('hidden');
                 eraBox.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; });
             }
+            renderCarSelectorButtons();
         }
 
         window.updateSubmodelsSections = function(presetSubmodels = null, presetEraMap = null) {
@@ -517,18 +552,18 @@
                 if (checkedRadio) eraMap.set(sub, checkedRadio.value);
             });
 
-            const checkedCars = Array.from(document.querySelectorAll('input[name="prod-cars"]:checked')).map(cb => cb.value);
+            const carsToShow = Array.from(openedCarNames);
             const container = document.getElementById('form-submodels-container');
             const listEl = document.getElementById('form-submodels-list');
 
-            if (checkedCars.length === 0) {
+            if (carsToShow.length === 0) {
                 container.classList.add('hidden');
                 listEl.innerHTML = '';
                 return;
             }
 
             container.classList.remove('hidden');
-            listEl.innerHTML = checkedCars.map(car => {
+            listEl.innerHTML = carsToShow.map(car => {
                 const subs = carModelsCatalog[car] || [];
                 return `
                     <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
@@ -576,13 +611,7 @@
                 b.checked = !allChecked;
                 toggleSubmodelEraRow(b.value);
             });
-        }
-
-        window.selectAllCarsInForm = function() {
-            const boxes = document.querySelectorAll('input[name="prod-cars"]');
-            const allChecked = Array.from(boxes).every(b => b.checked);
-            boxes.forEach(b => { b.checked = !allChecked; });
-            updateSubmodelsSections();
+            renderCarSelectorButtons();
         }
 
         window.previewSelectedImages = function(input) {
@@ -893,7 +922,7 @@
             const filtered = sortProductsArray(products).filter(p => {
                 let matchModel = true;
                 if (selectedModel !== 'all') {
-                    const pCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
+                    const pCars = Array.isArray(p.cars) ? p.cars : [];
                     const pSubmodels = Array.isArray(p.submodels) ? p.submodels : [];
                     const matchesCarBox =
                         pCars.includes(selectedModel) ||
@@ -954,11 +983,11 @@
                     </div>
                 ` : '';
 
-                // في واجهة الزبائن تظهر أسماء السيارات المختارة فقط
-                const publicCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
+                // في واجهة الزبائن تظهر أسماء السيارات فقط
+                const publicCars = Array.isArray(p.cars) ? p.cars : [];
                 const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
 
-                // في خانة المنتج للمالك يظهر الموديل المختار + نوعه فقط (مثل Clio 5 • Ancien Model) بدون اسم السيارة الرئيسي بشكل منفصل
+                // في خانة المنتج للمالك يظهر الموديل المختار + نوعه فقط (مثل Clio 5 • Ancien Model) دون اسم السيارة الرئيسي بشكل منفصل
                 const submodelEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
                 const hasSubmodels = Array.isArray(p.submodels) && p.submodels.length > 0;
                 const adminSubmodelsBadges = isAdmin && hasSubmodels
@@ -1205,10 +1234,9 @@
             document.getElementById('prod-desc').value = p.desc || '';
             document.getElementById('prod-image').value = '';
 
-            const existingCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
             const existingSubs = Array.isArray(p.submodels) ? p.submodels : [];
             const existingEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
-            renderModelCheckboxesInForm(existingCars, existingSubs, existingEras);
+            renderModelCheckboxesInForm(existingSubs, existingEras);
 
             const currentImgs = getProductImages(p);
             document.getElementById('prod-image-preview').innerHTML = currentImgs.map((src, idx) => `
@@ -1229,7 +1257,7 @@
             document.getElementById('edit-product-id').value = "";
             document.querySelector('#admin-panel form').reset();
             document.getElementById('prod-image-preview').innerHTML = '';
-            renderModelCheckboxesInForm([], [], {});
+            renderModelCheckboxesInForm([], {});
             document.getElementById('admin-form-title').innerText = "لوحة تحكم المالك - إضافة منتج جديد";
             document.getElementById('publish-btn').innerText = "نشر المنتج في المتجر (سحابياً)";
             document.getElementById('cancel-edit-btn').classList.add('hidden');
@@ -1241,7 +1269,6 @@
             const btn = document.getElementById('publish-btn');
             btn.disabled = true;
 
-            const selectedCars = Array.from(document.querySelectorAll('input[name="prod-cars"]:checked')).map(cb => cb.value);
             const selectedSubmodels = Array.from(document.querySelectorAll('input[name="prod-submodels"]:checked')).map(cb => cb.value);
             const submodelEras = {};
             selectedSubmodels.forEach(sub => {
@@ -1251,14 +1278,19 @@
                 }
             });
 
+            // نربط السيارة فقط عندما يختار المالك موديلاتها حتى لا يظهر اسم السيارة تلقائياً عند اختيار موديل مثل Clio 5
+            const derivedCars = Array.from(new Set(
+                selectedSubmodels.map(sub => findCarForSubmodel(sub)).filter(Boolean)
+            ));
+
             const nissanSet = ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"];
             const daciaSet = ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
             const renaultSet = ["Megane", "Clio", "Kangoo", "Express", "Symbol"];
 
             let mainBrand = "Renault";
-            if (selectedCars.some(m => nissanSet.includes(m)) && !selectedCars.some(m => renaultSet.includes(m) || daciaSet.includes(m))) {
+            if (derivedCars.some(m => nissanSet.includes(m)) && !derivedCars.some(m => renaultSet.includes(m) || daciaSet.includes(m))) {
                 mainBrand = "Nissan";
-            } else if (selectedCars.some(m => daciaSet.includes(m)) && !selectedCars.some(m => renaultSet.includes(m) || nissanSet.includes(m))) {
+            } else if (derivedCars.some(m => daciaSet.includes(m)) && !derivedCars.some(m => renaultSet.includes(m) || nissanSet.includes(m))) {
                 mainBrand = "Dacia";
             }
 
@@ -1280,8 +1312,8 @@
                     const updateData = {
                         name: document.getElementById('prod-name').value,
                         brand: mainBrand,
-                        cars: selectedCars,
-                        models: selectedCars,
+                        cars: derivedCars,
+                        models: derivedCars,
                         submodels: selectedSubmodels,
                         submodelEras: submodelEras,
                         price: Number(document.getElementById('prod-price').value),
@@ -1303,8 +1335,8 @@
                     const newProductData = {
                         name: document.getElementById('prod-name').value,
                         brand: mainBrand,
-                        cars: selectedCars,
-                        models: selectedCars,
+                        cars: derivedCars,
+                        models: derivedCars,
                         submodels: selectedSubmodels,
                         submodelEras: submodelEras,
                         sortOrder: nextOrder,
@@ -1342,7 +1374,7 @@
             }
         }
 
-        renderModelCheckboxesInForm([], [], {});
+        renderModelCheckboxesInForm([], {});
         renderSidebarContent();
         renderModelBoxes();
         fetchProductsFromCloud();
