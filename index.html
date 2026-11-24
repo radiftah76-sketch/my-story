@@ -188,31 +188,31 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اسم السيارة عنوان/زر لإظهار موديلاتها فقط، والمنتج يعرض الموديل المختار فقط دون اسم السيارة -->
+                <!-- اسم السيارة يظهر كخيار أول تحت الزر ثم تحته موديلاته -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
                     <div>
                         <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
-                            1. اضغط على اسم السيارة لإظهار موديلاتها:
+                            1. اضغط على اسم السيارة لإظهارها كخيار أول وتحتها موديلاتها:
                         </label>
-                        <span class="text-[11px] text-slate-400">اسم السيارة يظهر هنا كعنوان لإظهار موديلاتها فقط، وعند اختيار موديل مثل Clio 5 يظهر الموديل وحده في المنتج دون اسم السيارة.</span>
+                        <span class="text-[11px] text-slate-400">عند الضغط مثلاً على Sandero يظهر Sandero كخيار أول وتحته موديلاته، وعند اختيار أي خيار يظهر وحده في المنتج دون اسم السيارة فوقه.</span>
                     </div>
 
                     <div id="form-cars-buttons" class="flex flex-wrap gap-2"></div>
 
                     <div id="form-submodels-container" class="hidden pt-3 border-t dark:border-slate-700 space-y-3">
                         <label class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block">
-                            2. اختر الموديل / الجيل وحدد (Ancien Model أو Nouveau Model):
+                            2. اختر السيارة أو الموديلات وحدد (Ancien Model أو Nouveau Model):
                         </label>
                         <div id="form-submodels-list" class="space-y-3"></div>
                     </div>
                 </div>
 
-                <!-- تعدد الصور (2 أو 3 صور للمنتج الواحد) -->
+                <!-- تعدد الصور (2 أو 3 صور للمنتج الواحد) + اختيار الصورة الرئيسية -->
                 <div class="bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-3.5">
                     <label class="block text-xs font-bold mb-1">صور المنتج (2 إلى 3 صور كحد أقصى):</label>
                     <input type="file" id="prod-image" accept="image/*" multiple onchange="previewSelectedImages(this)" class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs">
-                    <p class="text-[10px] text-slate-400 mt-1">يمكنك تحديد صورتين أو ثلاث صور دفعة واحدة (الصورة الأولى هي الرئيسية في المتجر). اتركه فارغاً عند التعديل للإبقاء على الصور الحالية.</p>
-                    <div id="prod-image-preview" class="flex flex-wrap gap-2 mt-2.5"></div>
+                    <p class="text-[10px] text-slate-400 mt-1">يمكنك تحديد صورتين أو ثلاث صور دفعة واحدة، ثم اضغط على <strong>"تعيين كرئيسية"</strong> لتحديد الصورة الرئيسية للمنتج.</p>
+                    <div id="prod-image-preview" class="flex flex-wrap gap-3 mt-3"></div>
                 </div>
 
                 <div>
@@ -367,6 +367,10 @@
         let productImageIndex = {};
         let openedCarNames = new Set();
 
+        // إدارة قائمة الصور المحددة في النموذج ومؤشر الصورة الرئيسية
+        let formPreviewImages = [];
+        let formMainImageIndex = 0;
+
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
 
@@ -477,8 +481,12 @@
         function renderModelCheckboxesInForm(selectedSubmodels = [], selectedEraBySubmodel = {}) {
             openedCarNames = new Set();
             selectedSubmodels.forEach(sub => {
-                const parentCar = findCarForSubmodel(sub);
-                if (parentCar) openedCarNames.add(parentCar);
+                if (selectableProductModels.includes(sub)) {
+                    openedCarNames.add(sub);
+                } else {
+                    const parentCar = findCarForSubmodel(sub);
+                    if (parentCar) openedCarNames.add(parentCar);
+                }
             });
 
             renderCarSelectorButtons(selectedSubmodels);
@@ -494,7 +502,8 @@
             buttonsContainer.innerHTML = selectableProductModels.map(car => {
                 const isOpened = openedCarNames.has(car);
                 const carSubs = carModelsCatalog[car] || [];
-                const selectedCount = carSubs.filter(s => subsSet.has(s)).length;
+                const relatedItems = [car, ...carSubs];
+                const selectedCount = relatedItems.filter(s => subsSet.has(s)).length;
 
                 const activeClasses = isOpened
                     ? 'bg-amber-500 text-slate-950 border-amber-500 shadow'
@@ -537,6 +546,34 @@
             renderCarSelectorButtons();
         }
 
+        function buildSelectionRowHtml(itemLabel, car, isChecked, currentEra, isFirstCarOption = false) {
+            const encodedItem = encodeURIComponent(itemLabel);
+            const rowStyle = isFirstCarOption
+                ? 'bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/40'
+                : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700';
+
+            return `
+                <div class="${rowStyle} border rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+                    <label class="inline-flex items-center gap-1.5 text-xs font-extrabold cursor-pointer">
+                        <input type="checkbox" name="prod-submodels" data-car="${car}" value="${itemLabel}" ${isChecked ? 'checked' : ''} onchange="toggleSubmodelEraRow('${itemLabel.replace(/'/g, "\\'")}')" class="accent-emerald-500 rounded">
+                        <span>${itemLabel}</span>
+                        ${isFirstCarOption ? '<span class="text-[10px] bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded font-black">السيارة</span>' : ''}
+                    </label>
+
+                    <div id="era-box-${encodedItem}" class="${isChecked ? 'flex' : 'hidden'} items-center gap-2 text-[11px] font-bold">
+                        <label class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg cursor-pointer">
+                            <input type="radio" name="era-${encodedItem}" value="Ancien Model" ${currentEra === 'Ancien Model' ? 'checked' : ''} class="accent-amber-500">
+                            <span>Ancien Model</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg cursor-pointer">
+                            <input type="radio" name="era-${encodedItem}" value="Nouveau Model" ${currentEra === 'Nouveau Model' ? 'checked' : ''} class="accent-emerald-500">
+                            <span>Nouveau Model</span>
+                        </label>
+                    </div>
+                </div>
+            `;
+        }
+
         window.updateSubmodelsSections = function(presetSubmodels = null, presetEraMap = null) {
             const activeSubmodels = presetSubmodels !== null
                 ? new Set(presetSubmodels)
@@ -565,39 +602,22 @@
             container.classList.remove('hidden');
             listEl.innerHTML = carsToShow.map(car => {
                 const subs = carModelsCatalog[car] || [];
+                const carOptionHtml = buildSelectionRowHtml(car, car, activeSubmodels.has(car), eraMap.get(car) || "", true);
+                const submodelsHtml = subs.map(sub =>
+                    buildSelectionRowHtml(sub, car, activeSubmodels.has(sub), eraMap.get(sub) || "", false)
+                ).join('');
+
                 return `
                     <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-black text-slate-800 dark:text-slate-100">موديلات ${car}:</span>
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="text-xs font-black text-slate-800 dark:text-slate-100">${car} وموديلاته:</span>
                             <button type="button" onclick="toggleCarSubmodels('${car}')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline">
                                 تحديد الكل
                             </button>
                         </div>
                         <div class="space-y-2">
-                            ${subs.map(sub => {
-                                const isChecked = activeSubmodels.has(sub);
-                                const encodedSub = encodeURIComponent(sub);
-                                const currentEra = eraMap.get(sub) || "";
-                                return `
-                                    <div class="bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2">
-                                        <label class="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                                            <input type="checkbox" name="prod-submodels" data-car="${car}" value="${sub}" ${isChecked ? 'checked' : ''} onchange="toggleSubmodelEraRow('${sub.replace(/'/g, "\\'")}')" class="accent-emerald-500 rounded">
-                                            <span>${sub}</span>
-                                        </label>
-
-                                        <div id="era-box-${encodedSub}" class="${isChecked ? 'flex' : 'hidden'} items-center gap-2 text-[11px] font-bold">
-                                            <label class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg cursor-pointer">
-                                                <input type="radio" name="era-${encodedSub}" value="Ancien Model" ${currentEra === 'Ancien Model' ? 'checked' : ''} class="accent-amber-500">
-                                                <span>Ancien Model</span>
-                                            </label>
-                                            <label class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg cursor-pointer">
-                                                <input type="radio" name="era-${encodedSub}" value="Nouveau Model" ${currentEra === 'Nouveau Model' ? 'checked' : ''} class="accent-emerald-500">
-                                                <span>Nouveau Model</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
+                            ${carOptionHtml}
+                            ${submodelsHtml}
                         </div>
                     </div>
                 `;
@@ -614,25 +634,66 @@
             renderCarSelectorButtons();
         }
 
-        window.previewSelectedImages = function(input) {
+        function renderImagePreviewCards() {
             const previewEl = document.getElementById('prod-image-preview');
-            previewEl.innerHTML = '';
+            if (!previewEl) return;
+
+            if (!Array.isArray(formPreviewImages) || formPreviewImages.length === 0) {
+                previewEl.innerHTML = '';
+                return;
+            }
+
+            formMainImageIndex = Math.max(0, Math.min(formMainImageIndex, formPreviewImages.length - 1));
+
+            previewEl.innerHTML = formPreviewImages.map((src, idx) => {
+                const isMain = idx === formMainImageIndex;
+                return `
+                    <div class="w-24 rounded-xl overflow-hidden border ${isMain ? 'border-amber-500 ring-2 ring-amber-500/40' : 'border-slate-300 dark:border-slate-700'} bg-white dark:bg-slate-900 shadow-sm">
+                        <div class="relative h-20">
+                            <img src="${src}" class="w-full h-full object-cover">
+                            <span class="absolute top-1 right-1 ${isMain ? 'bg-amber-500 text-slate-950' : 'bg-black/70 text-white'} text-[9px] font-black px-1.5 py-0.5 rounded">
+                                ${isMain ? 'رئيسية' : 'صورة ' + (idx + 1)}
+                            </span>
+                        </div>
+                        <button type="button" onclick="setMainPreviewImage(${idx})" class="w-full py-1 text-[10px] font-extrabold transition ${isMain ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-amber-500 hover:text-slate-950'}">
+                            ${isMain ? '✓ هي الرئيسية' : 'تعيين كرئيسية'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.setMainPreviewImage = function(index) {
+            if (index < 0 || index >= formPreviewImages.length) return;
+            formMainImageIndex = index;
+            renderImagePreviewCards();
+        }
+
+        function reorderWithMainFirst(imagesArray, mainIndex) {
+            if (!Array.isArray(imagesArray) || imagesArray.length === 0) return [];
+            const validIdx = Math.max(0, Math.min(mainIndex || 0, imagesArray.length - 1));
+            const copy = [...imagesArray];
+            const [chosenMain] = copy.splice(validIdx, 1);
+            return [chosenMain, ...copy];
+        }
+
+        window.previewSelectedImages = async function(input) {
             if (!input.files || input.files.length === 0) return;
 
             if (input.files.length > 3) {
                 alert('يمكنك اختيار 3 صور كحد أقصى لكل منتج. سيتم اعتماد أول 3 صور فقط.');
             }
 
-            const filesToShow = Array.from(input.files).slice(0, 3);
-            filesToShow.forEach((file, idx) => {
-                const url = URL.createObjectURL(file);
-                previewEl.innerHTML += `
-                    <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-amber-500/60">
-                        <img src="${url}" class="w-full h-full object-cover">
-                        <span class="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-white text-center font-bold">${idx === 0 ? 'رئيسية' : 'صورة ' + (idx + 1)}</span>
-                    </div>
-                `;
-            });
+            const filesToProcess = Array.from(input.files).slice(0, 3);
+            const converted = [];
+            for (const file of filesToProcess) {
+                const compressed = await compressImageFile(file, 750, 0.68);
+                converted.push(compressed);
+            }
+
+            formPreviewImages = converted;
+            formMainImageIndex = 0;
+            renderImagePreviewCards();
         }
 
         function getProductImages(p) {
@@ -989,7 +1050,7 @@
                     </div>
                 ` : '';
 
-                // عند اختيار موديل مثل Clio 5 يظهر الموديل فقط دون اسم السيارة فوقه
+                // عرض الخيارات المختارة فقط (مثل Sandero أو Clio 5) مع جيلها دون اسم سيارة إضافي فوقها
                 const submodelEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
                 const hasSubmodels = Array.isArray(p.submodels) && p.submodels.length > 0;
                 const adminSubmodelsBadges = hasSubmodels
@@ -1237,13 +1298,9 @@
             const existingEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
             renderModelCheckboxesInForm(existingSubs, existingEras);
 
-            const currentImgs = getProductImages(p);
-            document.getElementById('prod-image-preview').innerHTML = currentImgs.map((src, idx) => `
-                <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-400/50">
-                    <img src="${src}" class="w-full h-full object-cover">
-                    <span class="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-white text-center font-bold">${idx === 0 ? 'رئيسية' : 'صورة ' + (idx + 1)}</span>
-                </div>
-            `).join('');
+            formPreviewImages = [...getProductImages(p)];
+            formMainImageIndex = 0;
+            renderImagePreviewCards();
 
             document.getElementById('admin-form-title').innerText = "تعديل المنتج المحدد";
             document.getElementById('publish-btn').innerText = "تحديث بيانات المنتج في السحابة";
@@ -1255,7 +1312,9 @@
         window.resetAdminForm = function() {
             document.getElementById('edit-product-id').value = "";
             document.querySelector('#admin-panel form').reset();
-            document.getElementById('prod-image-preview').innerHTML = '';
+            formPreviewImages = [];
+            formMainImageIndex = 0;
+            renderImagePreviewCards();
             renderModelCheckboxesInForm([], {});
             document.getElementById('admin-form-title').innerText = "لوحة تحكم المالك - إضافة منتج جديد";
             document.getElementById('publish-btn').innerText = "نشر المنتج في المتجر (سحابياً)";
@@ -1277,9 +1336,8 @@
                 }
             });
 
-            // نحتفظ بالسيارة داخلياً للفلترة فقط ولا نعرض اسم السيارة فوق الموديل المختار
             const derivedCars = Array.from(new Set(
-                selectedSubmodels.map(sub => findCarForSubmodel(sub)).filter(Boolean)
+                selectedSubmodels.map(sub => selectableProductModels.includes(sub) ? sub : findCarForSubmodel(sub)).filter(Boolean)
             ));
 
             const nissanSet = ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"];
@@ -1294,16 +1352,7 @@
             }
 
             try {
-                const fileInput = document.getElementById('prod-image');
-                let compressedImages = [];
-
-                if (fileInput.files && fileInput.files.length > 0) {
-                    const selectedFiles = Array.from(fileInput.files).slice(0, 3);
-                    for (const file of selectedFiles) {
-                        const compressed = await compressImageFile(file, 750, 0.68);
-                        compressedImages.push(compressed);
-                    }
-                }
+                let orderedImages = reorderWithMainFirst(formPreviewImages, formMainImageIndex);
 
                 if (editId) {
                     btn.innerText = "جاري تحديث المنتج في السحابة...";
@@ -1320,17 +1369,17 @@
                         desc: document.getElementById('prod-desc').value,
                         sortOrder: existingProduct && typeof existingProduct.sortOrder === 'number' ? existingProduct.sortOrder : (products.length + 1)
                     };
-                    if (compressedImages.length > 0) {
-                        updateData.images = compressedImages;
-                        updateData.image = compressedImages[0];
+                    if (orderedImages.length > 0) {
+                        updateData.images = orderedImages;
+                        updateData.image = orderedImages[0];
                     }
 
                     await updateDoc(productRef, updateData);
                     alert('تم تحديث المنتج بنجاح!');
                 } else {
                     btn.innerText = "جاري النشر في سحابة Firebase...";
-                    if (compressedImages.length === 0) {
-                        compressedImages = ["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80"];
+                    if (orderedImages.length === 0) {
+                        orderedImages = ["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80"];
                     }
                     const nextOrder = products.length + 1;
                     const newProductData = {
@@ -1343,8 +1392,8 @@
                         sortOrder: nextOrder,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value,
-                        images: compressedImages,
-                        image: compressedImages[0],
+                        images: orderedImages,
+                        image: orderedImages[0],
                         createdAt: new Date()
                     };
                     await addDoc(productsCol, newProductData);
