@@ -188,14 +188,14 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اختيار الموديل / الجيل + Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
+                <!-- اختيار اسم السيارة، الموديلات/الأجيال، وخيار Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
                             <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
                                 1. اختر اسم السيارة (يمكنك اختيار سيارة واحدة أو أكثر):
                             </label>
-                            <span class="text-[11px] text-slate-400">عند اختيار موديل مثل Clio 5 أو Qashqai وتحديد Ancien Model أو Nouveau Model، سيظهر في خانة المنتج كما اخترته دون إضافة اسم السيارة الرئيسي بشكل منفصل.</span>
+                            <span class="text-[11px] text-slate-400">عند اختيار موديل مثل Clio 5 وتحديد Ancien Model أو Nouveau Model، سيظهر في خانة المنتج كما اخترته دون إضافة اسم السيارة الرئيسي تلقائياً.</span>
                         </div>
                         <button type="button" onclick="selectAllCarsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
                             تحديد / إلغاء كل السيارات
@@ -471,23 +471,13 @@
 
         const selectableProductModels = Object.keys(carModelsCatalog);
 
-        function findCarForSubmodel(submodel) {
-            for (const [carName, list] of Object.entries(carModelsCatalog)) {
-                if (list.includes(submodel)) return carName;
-            }
-            return null;
-        }
-
         function renderModelCheckboxesInForm(selectedCars = [], selectedSubmodels = [], selectedEraBySubmodel = {}) {
             const carsContainer = document.getElementById('form-cars-checkboxes');
-            const derivedCars = new Set(selectedCars);
-            selectedSubmodels.forEach(sub => {
-                const parentCar = findCarForSubmodel(sub);
-                if (parentCar) derivedCars.add(parentCar);
-            });
+            // لا نضيف اسم السيارة الرئيسي تلقائياً عند اختيار موديل فرعي مثل Clio 5، بل نعتمد فقط ما تم اختياره صراحة
+            const explicitCars = new Set(Array.isArray(selectedCars) ? selectedCars : []);
 
             carsContainer.innerHTML = selectableProductModels.map(car => {
-                const checked = derivedCars.has(car) ? 'checked' : '';
+                const checked = explicitCars.has(car) ? 'checked' : '';
                 return `
                     <label class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 border dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer hover:border-amber-500 transition">
                         <input type="checkbox" name="prod-cars" value="${car}" ${checked} onchange="updateSubmodelsSections()" class="accent-amber-500 rounded">
@@ -964,14 +954,11 @@
                     </div>
                 ` : '';
 
-                // في واجهة الزبائن تظهر أسماء السيارات فقط
-                const publicCars = Array.isArray(p.cars) && p.cars.length
-                    ? p.cars
-                    : (Array.isArray(p.models) && p.models.length ? p.models : ["Renault"]);
-
+                // في واجهة الزبائن تظهر أسماء السيارات المختارة فقط
+                const publicCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
                 const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
 
-                // في خانة المنتج للمالك يظهر الموديل المختار + نوعه فقط (مثل Clio 5 • Ancien Model أو Qashqai J11 • Nouveau Model) بدون اسم السيارة الرئيسي بشكل منفصل
+                // في خانة المنتج للمالك يظهر الموديل المختار + نوعه فقط (مثل Clio 5 • Ancien Model) بدون اسم السيارة الرئيسي بشكل منفصل
                 const submodelEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
                 const hasSubmodels = Array.isArray(p.submodels) && p.submodels.length > 0;
                 const adminSubmodelsBadges = isAdmin && hasSubmodels
