@@ -188,13 +188,13 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- النقر على اسم السيارة لإظهار موديلاتها + اختيار الموديل و Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
+                <!-- اسم السيارة عنوان/زر لإظهار موديلاتها فقط، والمنتج يعرض الموديل المختار فقط دون اسم السيارة -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
                     <div>
                         <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
-                            1. انقر على اسم السيارة لإظهار موديلاتها:
+                            1. اضغط على اسم السيارة لإظهار موديلاتها:
                         </label>
-                        <span class="text-[11px] text-slate-400">عند النقر على اسم سيارة مثل Clio أو Qashqai تظهر موديلاتها؛ وعند اختيار موديل محدد مثل Clio 5 يظهر في خانة المنتج وحده دون اسم السيارة الرئيسي.</span>
+                        <span class="text-[11px] text-slate-400">اسم السيارة يظهر هنا كعنوان لإظهار موديلاتها فقط، وعند اختيار موديل مثل Clio 5 يظهر الموديل وحده في المنتج دون اسم السيارة.</span>
                     </div>
 
                     <div id="form-cars-buttons" class="flex flex-wrap gap-2"></div>
@@ -983,14 +983,10 @@
                     </div>
                 ` : '';
 
-                // في واجهة الزبائن تظهر أسماء السيارات فقط
-                const publicCars = Array.isArray(p.cars) ? p.cars : [];
-                const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
-
-                // في خانة المنتج للمالك يظهر الموديل المختار + نوعه فقط (مثل Clio 5 • Ancien Model) دون اسم السيارة الرئيسي بشكل منفصل
+                // عند اختيار موديل مثل Clio 5 يظهر الموديل فقط دون اسم السيارة فوقه
                 const submodelEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
                 const hasSubmodels = Array.isArray(p.submodels) && p.submodels.length > 0;
-                const adminSubmodelsBadges = isAdmin && hasSubmodels
+                const adminSubmodelsBadges = hasSubmodels
                     ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.submodels.map(sub => {
                         const eraLabel = submodelEras[sub] ? ` • ${submodelEras[sub]}` : '';
                         return `<span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded">${sub}${eraLabel}</span>`;
@@ -1020,9 +1016,6 @@
                                 </button>
                             </div>
                             <div class="p-4">
-                                <div class="flex flex-wrap items-center gap-1.5 mb-1">
-                                    ${carBadges}
-                                </div>
                                 ${adminSubmodelsBadges}
                                 <h3 class="text-base font-bold mt-1 mb-1">${p.name}</h3>
                                 <p class="text-slate-500 text-xs mb-3">${p.desc || ''}</p>
@@ -1278,7 +1271,7 @@
                 }
             });
 
-            // نربط السيارة فقط عندما يختار المالك موديلاتها حتى لا يظهر اسم السيارة تلقائياً عند اختيار موديل مثل Clio 5
+            // نحتفظ بالسيارة داخلياً للفلترة فقط ولا نعرض اسم السيارة فوق الموديل المختار
             const derivedCars = Array.from(new Set(
                 selectedSubmodels.map(sub => findCarForSubmodel(sub)).filter(Boolean)
             ));
