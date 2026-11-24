@@ -339,7 +339,7 @@
     <!-- سكربت Firebase المتكامل -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -652,14 +652,20 @@
             filterProducts();
         }
 
+        function parseTimestamp(val) {
+            if (!val) return 0;
+            if (typeof val === 'number') return val;
+            if (typeof val === 'object' && typeof val.seconds === 'number') return val.seconds;
+            const parsed = new Date(val).getTime();
+            return isNaN(parsed) ? 0 : parsed / 1000;
+        }
+
         function sortProductsArray(list) {
             return [...list].sort((a, b) => {
                 const orderA = typeof a.sortOrder === 'number' ? a.sortOrder : Number.MAX_SAFE_INTEGER;
                 const orderB = typeof b.sortOrder === 'number' ? b.sortOrder : Number.MAX_SAFE_INTEGER;
                 if (orderA !== orderB) return orderA - orderB;
-                const timeA = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : (a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0);
-                const timeB = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : (b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0);
-                return timeB - timeA;
+                return parseTimestamp(b.createdAt) - parseTimestamp(a.createdAt);
             });
         }
 
@@ -680,8 +686,8 @@
                             <span class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 font-black text-xs flex items-center justify-center shrink-0">${idx + 1}</span>
                             <img src="${imgs[0]}" class="w-10 h-10 rounded-lg object-cover shrink-0 border dark:border-slate-700">
                             <div class="min-w-0">
-                                <p class="text-xs font-bold truncate">${p.name}</p>
-                                <p class="text-[10px] text-slate-400">${p.price} DH</p>
+                                <p class="text-xs font-bold truncate">${p.name || ''}</p>
+                                <p class="text-[10px] text-slate-400">${p.price || 0} DH</p>
                             </div>
                         </div>
 
@@ -749,9 +755,9 @@
 
         async function fetchProductsFromCloud() {
             const spinner = document.getElementById('loading-spinner');
+            spinner.style.display = 'block';
             try {
-                const q = query(productsCol, orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
+                const querySnapshot = await getDocs(productsCol);
                 const fetched = [];
                 querySnapshot.forEach((docSnap) => {
                     fetched.push({ id: docSnap.id, ...docSnap.data() });
@@ -1017,16 +1023,16 @@
                             </div>
                             <div class="p-4">
                                 ${adminSubmodelsBadges}
-                                <h3 class="text-base font-bold mt-1 mb-1">${p.name}</h3>
+                                <h3 class="text-base font-bold mt-1 mb-1">${p.name || ''}</h3>
                                 <p class="text-slate-500 text-xs mb-3">${p.desc || ''}</p>
-                                <div class="text-lg font-black text-slate-900 dark:text-white">${p.price} DH</div>
+                                <div class="text-lg font-black text-slate-900 dark:text-white">${p.price || 0} DH</div>
                             </div>
                         </div>
                         <div class="px-4 pb-4 space-y-2">
-                            <button onclick="quickWhatsAppOrder('${p.name.replace(/'/g, "\\'")}', ${p.price})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                            <button onclick="quickWhatsAppOrder('${(p.name || '').replace(/'/g, "\\'")}', ${Number(p.price) || 0})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                                 <i class="fa-brands fa-whatsapp"></i><span>${translations[currentLang].order_wa}</span>
                             </button>
-                            <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', ${p.price})" class="w-full bg-slate-900 dark:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">
+                            <button onclick="addToCart('${(p.name || '').replace(/'/g, "\\'")}', ${Number(p.price) || 0})" class="w-full bg-slate-900 dark:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">
                                 <i class="fa-solid fa-cart-plus"></i> <span>${translations[currentLang].add_cart}</span>
                             </button>
                             ${adminButtons}
@@ -1222,8 +1228,8 @@
             if (!p) return;
 
             document.getElementById('edit-product-id').value = p.id;
-            document.getElementById('prod-name').value = p.name;
-            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-name').value = p.name || '';
+            document.getElementById('prod-price').value = p.price || '';
             document.getElementById('prod-desc').value = p.desc || '';
             document.getElementById('prod-image').value = '';
 
@@ -1302,6 +1308,7 @@
                 if (editId) {
                     btn.innerText = "جاري تحديث المنتج في السحابة...";
                     const productRef = doc(db, "produits", editId);
+                    const existingProduct = products.find(item => item.id === editId);
                     const updateData = {
                         name: document.getElementById('prod-name').value,
                         brand: mainBrand,
@@ -1310,7 +1317,8 @@
                         submodels: selectedSubmodels,
                         submodelEras: submodelEras,
                         price: Number(document.getElementById('prod-price').value),
-                        desc: document.getElementById('prod-desc').value
+                        desc: document.getElementById('prod-desc').value,
+                        sortOrder: existingProduct && typeof existingProduct.sortOrder === 'number' ? existingProduct.sortOrder : (products.length + 1)
                     };
                     if (compressedImages.length > 0) {
                         updateData.images = compressedImages;
@@ -1344,7 +1352,7 @@
                 }
 
                 resetAdminForm();
-                fetchProductsFromCloud();
+                await fetchProductsFromCloud();
             } catch (error) {
                 console.error("خطأ أثناء العملية:", error);
                 alert("حدث خطأ أثناء حفظ البيانات.");
@@ -1359,7 +1367,7 @@
                 try {
                     await deleteDoc(doc(db, "produits", id));
                     alert('تم الحذف بنجاح!');
-                    fetchProductsFromCloud();
+                    await fetchProductsFromCloud();
                 } catch (error) {
                     console.error("خطأ في الحذف:", error);
                     alert("تعذر حذف المنتج (غير مسجل الدخول كمالك).");
