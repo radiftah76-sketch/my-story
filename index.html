@@ -25,6 +25,11 @@
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
         }
+        .brand-card.active {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.14);
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25);
+        }
         .model-box.active {
             border-color: #f59e0b;
             background: rgba(245, 158, 11, 0.16);
@@ -123,18 +128,18 @@
     </aside>
 
     <!-- الواجهة الرئيسية -->
-    <section class="bg-slate-900 text-white py-12 md:py-16 text-center px-4 relative overflow-hidden">
+    <section class="bg-slate-900 text-white py-10 md:py-14 text-center px-4 relative overflow-hidden">
         <div class="max-w-3xl mx-auto relative z-10">
             <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">قطع غيار ومعدات السيارات الأصلية في المغرب</h1>
-            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-6">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
+            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-5">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
             
-            <div class="relative max-w-xl mx-auto mb-6">
+            <div class="relative max-w-xl mx-auto mb-5">
                 <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="ابحث عن قطعة غيار (مثال: مكابح، فيلتر، LED...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
                 <i id="search-icon" class="fa-solid fa-magnifying-glass absolute top-4 right-4 text-slate-400 text-lg"></i>
             </div>
 
             <div class="flex flex-wrap justify-center gap-3">
-                <a href="#renault-showcase" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
+                <a href="#brands-showcase" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
                 <button onclick="openCompareModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition">
                     <span data-i18n="compare_btn">مقارنة القطع</span> (<span id="compare-count">0</span>)
                 </button>
@@ -142,27 +147,20 @@
         </div>
     </section>
 
-    <!-- شعار Renault الكبير الاحترافي وتحته مربعات السيارات (بما فيها Dacia و Nissan) -->
-    <section id="renault-showcase" class="container mx-auto px-4 pt-8 pb-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-5 mb-6 border-b border-slate-200 dark:border-slate-800">
-                <div onclick="resetFilters()" class="flex items-center gap-4 cursor-pointer group">
-                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-slate-950 dark:bg-slate-800 border-2 border-amber-500/50 group-hover:border-amber-500 flex items-center justify-center p-3 shadow-lg transition">
-                        <img src="https://www.carlogos.org/car-logos/renault-logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="Renault" class="w-full h-full object-contain">
-                    </div>
-                    <div>
-                        <span class="inline-block text-[11px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full mb-1">RENAULT • DACIA • NISSAN</span>
-                        <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">معدات وقطع غيار السيارات</h2>
-                        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">اختر اسم السيارة في المربعات أسفله لعرض جميع القطع الخاصة بها</p>
-                    </div>
+    <!-- الشعارات الثلاثة (Renault - Dacia - Nissan) واحد تحت واحد، وتظهر أسماء سيارات كل شعار عند الضغط عليه فقط -->
+    <section id="brands-showcase" class="container mx-auto px-4 pt-6 pb-2">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 shadow-sm">
+            <div class="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                    <h2 class="text-lg md:text-xl font-black text-slate-900 dark:text-white">اختر الشعار</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">اضغط على الشعار لإظهار سياراته والقطع الخاصة به</p>
                 </div>
-
-                <button onclick="resetFilters()" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 font-bold px-4 py-2 rounded-xl text-xs transition" data-i18n="show_all">
+                <button onclick="resetFilters()" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs transition" data-i18n="show_all">
                     عرض الكل
                 </button>
             </div>
 
-            <div id="models-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
+            <div id="brands-stack" class="flex flex-col gap-3"></div>
         </div>
     </section>
 
@@ -174,6 +172,46 @@
                 <div class="flex gap-2">
                     <button id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold">إلغاء التعديل</button>
                     <button onclick="logoutAdmin()" class="bg-rose-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold" data-i18n="logout">خروج</button>
+                </div>
+            </div>
+
+            <!-- قسم إحصائيات الزوار والأجهزة في لوحة المالك -->
+            <div class="bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-2xl p-4 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-users-viewfinder text-amber-500"></i>
+                            <span>من زار المتجر (الأجهزة وحسابات المستخدمين)</span>
+                        </h3>
+                        <p class="text-[11px] text-slate-400">يظهر نوع الجهاز (iPhone، Samsung، Android، PC...) واسم/Gmail إذا كان الزائر مسجلاً حسابه في المتجر.</p>
+                    </div>
+                    <button type="button" onclick="fetchVisitorsFromCloud()" class="bg-slate-900 dark:bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>تحديث الزوار</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
+                        <span class="text-[11px] text-slate-400 block">إجمالي الزيارات</span>
+                        <span id="stat-total-visits" class="text-lg font-black text-amber-500">0</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
+                        <span class="text-[11px] text-slate-400 block">زيارات اليوم</span>
+                        <span id="stat-today-visits" class="text-lg font-black text-emerald-500">0</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
+                        <span class="text-[11px] text-slate-400 block">هواتف (iPhone / Android)</span>
+                        <span id="stat-mobile-visits" class="text-lg font-black text-blue-500">0</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-3">
+                        <span class="text-[11px] text-slate-400 block">زوار بحساب / Gmail</span>
+                        <span id="stat-identified-visits" class="text-lg font-black text-purple-500">0</span>
+                    </div>
+                </div>
+
+                <div id="admin-visitors-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    <p class="text-xs text-slate-400 text-center py-3">جاري تحميل سجل الزوار...</p>
                 </div>
             </div>
 
@@ -242,8 +280,8 @@
     </section>
 
     <!-- قائمة المنتجات -->
-    <main class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-6">
+    <main class="container mx-auto px-4 py-6">
+        <div class="flex justify-between items-center mb-5">
             <h2 class="text-xl font-bold" data-i18n="available_parts">القطع المتاحة</h2>
             <span id="results-count" class="text-sm text-slate-500 font-bold"></span>
         </div>
@@ -301,13 +339,13 @@
                 <button onclick="switchAuthTab('register')" id="tab-register" class="w-1/2 py-2 font-bold text-slate-400 text-sm">حساب جديد</button>
             </div>
             <form id="login-form" onsubmit="handleCustomerLogin(event)" class="space-y-3">
-                <input type="email" id="login-email" placeholder="البريد الإلكتروني" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="email" id="login-email" placeholder="البريد الإلكتروني (Gmail)" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <input type="password" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm">دخول</button>
             </form>
             <form id="register-form" onsubmit="handleCustomerRegister(event)" class="hidden space-y-3">
                 <input type="text" id="reg-name" placeholder="الاسم الكامل" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
-                <input type="email" id="reg-email" placeholder="البريد الإلكتروني" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="email" id="reg-email" placeholder="البريد الإلكتروني (Gmail)" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <input type="password" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <button type="submit" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-sm">إنشاء الحساب</button>
             </form>
@@ -356,14 +394,17 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         const productsCol = collection(db, "produits");
+        const visitorsCol = collection(db, "visitors");
 
         const MY_WHATSAPP = "212674247257";
         let cartItems = [];
         let compareList = [];
         let isAdmin = false;
+        let activeBrandGroup = null;
         let selectedModel = "all";
         let currentLang = "ar";
         let products = [];
+        let visitorsList = [];
         let productImageIndex = {};
         let openedCarNames = new Set();
 
@@ -373,11 +414,182 @@
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
 
+        const brandGroupsData = [
+            {
+                id: "Renault",
+                name: "Renault",
+                subtitle: "Megane • Clio • Kangoo • Express • Symbol",
+                logo: "https://www.carlogos.org/car-logos/renault-logo.png",
+                cars: ["Megane", "Clio", "Kangoo", "Express", "Symbol"]
+            },
+            {
+                id: "Dacia",
+                name: "Dacia",
+                subtitle: "Dacia • Logan • Sandero • Duster • Dokker • Lodgy",
+                logo: "https://www.carlogos.org/car-logos/dacia-logo.png",
+                cars: ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"]
+            },
+            {
+                id: "Nissan",
+                name: "Nissan",
+                subtitle: "Nissan • Qashqai • Juke • Micra • Navara • X-Trail",
+                logo: "https://www.carlogos.org/car-logos/nissan-logo.png",
+                cars: ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"]
+            }
+        ];
+
+        const carModelsCatalog = {
+            "Megane": ["Megane 1", "Megane 2", "Megane 3", "Megane 4", "Megane E-Tech"],
+            "Clio": ["Clio 1", "Clio 2", "Clio 3", "Clio 4", "Clio 5", "Clio 6", "Clio 7", "Clio 8"],
+            "Kangoo": ["Kangoo 1", "Kangoo 2", "Kangoo Begra", "Kangoo 3"],
+            "Express": ["Express", "Express Van"],
+            "Symbol": ["Symbol 1", "Symbol 2", "Symbol 3"],
+            "Dacia": ["Dacia Classic", "Dacia New Gen"],
+            "Logan": ["Logan 1", "Logan 2", "Logan 3"],
+            "Sandero": ["Sandero 1", "Sandero 2", "Sandero 3", "Sandero Stepway"],
+            "Duster": ["Duster 1", "Duster 2", "Duster 3"],
+            "Dokker": ["Dokker", "Dokker Van", "Dokker Stepway"],
+            "Lodgy": ["Lodgy", "Lodgy Stepway"],
+            "Nissan": ["Nissan Classic", "Nissan New Gen"],
+            "Qashqai": ["Qashqai J10", "Qashqai J11", "Qashqai J12"],
+            "Juke": ["Juke F15", "Juke F16"],
+            "Micra": ["Micra K12", "Micra K13", "Micra K14"],
+            "Navara": ["Navara D22", "Navara D40", "Navara NP300"],
+            "X-Trail": ["X-Trail T30", "X-Trail T31", "X-Trail T32", "X-Trail T33"]
+        };
+
+        const selectableProductModels = Object.keys(carModelsCatalog);
+
+        function detectDeviceAndBrowser() {
+            const ua = navigator.userAgent || "";
+            let deviceType = "جهاز كمبيوتر (PC)";
+            let deviceIcon = "fa-desktop";
+
+            if (/iPhone/i.test(ua)) {
+                deviceType = "iPhone";
+                deviceIcon = "fa-mobile-screen-button";
+            } else if (/iPad/i.test(ua)) {
+                deviceType = "iPad";
+                deviceIcon = "fa-tablet-screen-button";
+            } else if (/Android/i.test(ua)) {
+                const samsungMatch = ua.match(/SM-[A-Z0-9]+|Galaxy\s?[A-Z0-9]+/i);
+                deviceType = samsungMatch ? `Samsung (${samsungMatch[0]})` : "Android Phone / Samsung";
+                deviceIcon = "fa-mobile-screen-button";
+            } else if (/Windows/i.test(ua)) {
+                deviceType = "Windows PC";
+                deviceIcon = "fa-laptop";
+            } else if (/Mac/i.test(ua)) {
+                deviceType = "Mac";
+                deviceIcon = "fa-laptop";
+            }
+
+            let browser = "متصفح آخر";
+            if (/Edg/i.test(ua)) browser = "Edge";
+            else if (/OPR|Opera/i.test(ua)) browser = "Opera";
+            else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Browser";
+            else if (/CriOS|Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
+            else if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) browser = "Safari";
+            else if (/Firefox/i.test(ua)) browser = "Firefox";
+
+            return { deviceType, deviceIcon, browser };
+        }
+
+        async function recordVisitToCloud(emailOverride = null, nameOverride = null) {
+            try {
+                const { deviceType, browser } = detectDeviceAndBrowser();
+                const userEmail = emailOverride || (currentUser && currentUser.email) || "";
+                const userName = nameOverride || (currentUser && currentUser.name) || "";
+
+                let visitorSessionId = sessionStorage.getItem("bmh_visitor_doc_id");
+                const nowIso = new Date().toISOString();
+
+                if (visitorSessionId && (userEmail || userName)) {
+                    await updateDoc(doc(db, "visitors", visitorSessionId), {
+                        userEmail,
+                        userName,
+                        updatedAt: nowIso
+                    });
+                } else if (!visitorSessionId) {
+                    const docRef = await addDoc(visitorsCol, {
+                        deviceType,
+                        browser,
+                        userEmail,
+                        userName,
+                        visitedAt: nowIso
+                    });
+                    sessionStorage.setItem("bmh_visitor_doc_id", docRef.id);
+                }
+
+                if (isAdmin) {
+                    await fetchVisitorsFromCloud();
+                }
+            } catch (err) {
+                console.error("تعذر تسجيل الزيارة:", err);
+            }
+        }
+
+        window.fetchVisitorsFromCloud = async function() {
+            const listEl = document.getElementById("admin-visitors-list");
+            if (!listEl) return;
+
+            try {
+                const snap = await getDocs(visitorsCol);
+                const items = [];
+                snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => new Date(b.visitedAt || 0) - new Date(a.visitedAt || 0));
+                visitorsList = items;
+
+                const todayStr = new Date().toISOString().slice(0, 10);
+                const totalCount = items.length;
+                const todayCount = items.filter(v => (v.visitedAt || "").startsWith(todayStr)).length;
+                const mobileCount = items.filter(v => /iPhone|iPad|Android|Samsung/i.test(v.deviceType || "")).length;
+                const identifiedCount = items.filter(v => Boolean(v.userEmail || v.userName)).length;
+
+                document.getElementById("stat-total-visits").innerText = totalCount;
+                document.getElementById("stat-today-visits").innerText = todayCount;
+                document.getElementById("stat-mobile-visits").innerText = mobileCount;
+                document.getElementById("stat-identified-visits").innerText = identifiedCount;
+
+                if (items.length === 0) {
+                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">لا توجد زيارات مسجلة بعد.</p>`;
+                    return;
+                }
+
+                listEl.innerHTML = items.slice(0, 40).map(v => {
+                    const isMobile = /iPhone|iPad|Android|Samsung/i.test(v.deviceType || "");
+                    const iconClass = isMobile ? "fa-mobile-screen-button text-emerald-500" : "fa-desktop text-blue-500";
+                    const timeFormatted = v.visitedAt ? new Date(v.visitedAt).toLocaleString("ar-MA", { dateStyle: "short", timeStyle: "short" }) : "";
+                    const identityBadge = v.userEmail
+                        ? `<span class="text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${v.userEmail}</span>`
+                        : `<span class="text-[10px] text-slate-400">زائر غير مسجل بحساب</span>`;
+
+                    return `
+                        <div class="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2.5 text-xs">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid ${iconClass}"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-black text-slate-800 dark:text-slate-100 truncate">${v.deviceType || "جهاز غير معروف"} <span class="text-[10px] font-normal text-slate-400">(${v.browser || ""})</span></p>
+                                    <div class="mt-0.5">${identityBadge}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 font-bold shrink-0">${timeFormatted}</span>
+                        </div>
+                    `;
+                }).join("");
+            } catch (err) {
+                console.error("خطأ في جلب الزوار:", err);
+                listEl.innerHTML = `<p class="text-xs text-rose-500 text-center py-3">تعذر جلب سجل الزوار.</p>`;
+            }
+        }
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 isAdmin = true;
                 document.getElementById('admin-panel').classList.remove('hidden');
                 renderAdminSortList();
+                fetchVisitorsFromCloud();
                 filterProducts();
             } else {
                 isAdmin = false;
@@ -424,49 +636,6 @@
                 sidebar_title: "My Profile & Orders", my_orders_title: "My Previous Orders", support_wa: "Customer Support"
             }
         };
-
-        const carModelBoxes = [
-            { id: "all", name: "الكل", sub: "Renault • Dacia • Nissan", icon: "fa-border-all", logo: null },
-            { id: "Megane", name: "Megane", sub: "Renault", icon: "fa-car", logo: null },
-            { id: "Clio", name: "Clio", sub: "Renault", icon: "fa-car-side", logo: null },
-            { id: "Kangoo", name: "Kangoo", sub: "Renault", icon: "fa-van-shuttle", logo: null },
-            { id: "Express", name: "Express", sub: "Renault", icon: "fa-truck-pickup", logo: null },
-            { id: "Symbol", name: "Symbol", sub: "Renault", icon: "fa-car", logo: null },
-            { id: "Dacia", name: "Dacia", sub: "Renault Group", icon: null, logo: "https://www.carlogos.org/car-logos/dacia-logo.png" },
-            { id: "Logan", name: "Logan", sub: "Dacia", icon: "fa-car", logo: null },
-            { id: "Sandero", name: "Sandero", sub: "Dacia", icon: "fa-car-side", logo: null },
-            { id: "Duster", name: "Duster", sub: "Dacia", icon: "fa-truck-monster", logo: null },
-            { id: "Dokker", name: "Dokker", sub: "Dacia", icon: "fa-van-shuttle", logo: null },
-            { id: "Lodgy", name: "Lodgy", sub: "Dacia", icon: "fa-shuttle-van", logo: null },
-            { id: "Nissan", name: "Nissan", sub: "Alliance", icon: null, logo: "https://www.carlogos.org/car-logos/nissan-logo.png" },
-            { id: "Qashqai", name: "Qashqai", sub: "Nissan", icon: "fa-car-side", logo: null },
-            { id: "Juke", name: "Juke", sub: "Nissan", icon: "fa-car", logo: null },
-            { id: "Micra", name: "Micra", sub: "Nissan", icon: "fa-car-side", logo: null },
-            { id: "Navara", name: "Navara", sub: "Nissan", icon: "fa-truck-pickup", logo: null },
-            { id: "X-Trail", name: "X-Trail", sub: "Nissan", icon: "fa-truck-monster", logo: null }
-        ];
-
-        const carModelsCatalog = {
-            "Megane": ["Megane 1", "Megane 2", "Megane 3", "Megane 4", "Megane E-Tech"],
-            "Clio": ["Clio 1", "Clio 2", "Clio 3", "Clio 4", "Clio 5", "Clio 6", "Clio 7", "Clio 8"],
-            "Kangoo": ["Kangoo 1", "Kangoo 2", "Kangoo Begra", "Kangoo 3"],
-            "Express": ["Express", "Express Van"],
-            "Symbol": ["Symbol 1", "Symbol 2", "Symbol 3"],
-            "Dacia": ["Dacia Classic", "Dacia New Gen"],
-            "Logan": ["Logan 1", "Logan 2", "Logan 3"],
-            "Sandero": ["Sandero 1", "Sandero 2", "Sandero 3", "Sandero Stepway"],
-            "Duster": ["Duster 1", "Duster 2", "Duster 3"],
-            "Dokker": ["Dokker", "Dokker Van", "Dokker Stepway"],
-            "Lodgy": ["Lodgy", "Lodgy Stepway"],
-            "Nissan": ["Nissan Classic", "Nissan New Gen"],
-            "Qashqai": ["Qashqai J10", "Qashqai J11", "Qashqai J12"],
-            "Juke": ["Juke F15", "Juke F16"],
-            "Micra": ["Micra K12", "Micra K13", "Micra K14"],
-            "Navara": ["Navara D22", "Navara D40", "Navara NP300"],
-            "X-Trail": ["X-Trail T30", "X-Trail T31", "X-Trail T32", "X-Trail T33"]
-        };
-
-        const selectableProductModels = Object.keys(carModelsCatalog);
 
         function findCarForSubmodel(submodel) {
             for (const [carName, list] of Object.entries(carModelsCatalog)) {
@@ -1026,42 +1195,88 @@
                 if (translations[lang][key]) el.innerText = translations[lang][key];
             });
             renderSidebarContent();
-            renderModelBoxes();
+            renderBrandsStack();
             filterProducts();
         }
 
-        function renderModelBoxes() {
-            const container = document.getElementById('models-grid');
+        // عرض الشعارات الثلاثة واحد تحت واحد، وإظهار سيارات كل شعار عند النقر عليه فقط
+        function renderBrandsStack() {
+            const container = document.getElementById('brands-stack');
             if (!container) return;
 
-            container.innerHTML = carModelBoxes.map(box => {
-                const isActive = selectedModel === box.id ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
-                const label = box.id === 'all' ? translations[currentLang].all_models : box.name;
+            container.innerHTML = brandGroupsData.map(brand => {
+                const isExpanded = activeBrandGroup === brand.id;
+                const activeCardStyle = isExpanded
+                    ? 'active border-amber-500'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
 
-                const visual = box.logo
-                    ? `<img src="${box.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${box.name}" class="w-9 h-9 object-contain">`
-                    : `<div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center"><i class="fa-solid ${box.icon} text-base"></i></div>`;
+                const carsPanelHtml = isExpanded ? `
+                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2.5" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-amber-600 dark:text-amber-400">سيارات ${brand.name}:</span>
+                            <button type="button" onclick="selectCarInsideBrand('${brand.id}', 'all')" class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${selectedModel === 'all' ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
+                                كل ${brand.name}
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                            ${brand.cars.map(carName => {
+                                const isCarSelected = selectedModel === carName;
+                                return `
+                                    <button type="button" onclick="selectCarInsideBrand('${brand.id}', '${carName}')" class="model-box ${isCarSelected ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-700 hover:border-amber-500'} bg-white dark:bg-slate-900 border rounded-xl py-2.5 px-3 text-xs font-black text-slate-900 dark:text-white shadow-sm transition cursor-pointer text-center">
+                                        ${carName}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : '';
 
                 return `
-                    <button type="button" onclick="selectModel('${box.id}')" class="model-box ${isActive} bg-slate-50 dark:bg-slate-800/70 border rounded-2xl p-3.5 flex flex-col items-center justify-center gap-1.5 shadow-sm transition cursor-pointer text-center">
-                        ${visual}
-                        <span class="text-sm font-black text-slate-900 dark:text-white">${label}</span>
-                        <span class="text-[10px] font-bold text-slate-400">${box.sub}</span>
-                    </button>
+                    <div onclick="toggleBrandGroup('${brand.id}')" class="brand-card ${activeCardStyle} bg-slate-50 dark:bg-slate-800/70 border rounded-2xl p-4 transition cursor-pointer">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 border border-slate-700 flex items-center justify-center p-2.5 shrink-0 shadow">
+                                    <img src="${brand.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${brand.name}" class="w-full h-full object-contain">
+                                </div>
+                                <div>
+                                    <h3 class="text-base md:text-lg font-black text-slate-900 dark:text-white">${brand.name}</h3>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400">${brand.subtitle}</p>
+                                </div>
+                            </div>
+                            <span class="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border dark:border-slate-700 flex items-center justify-center text-xs text-amber-500 shrink-0">
+                                <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
+                            </span>
+                        </div>
+                        ${carsPanelHtml}
+                    </div>
                 `;
             }).join('');
         }
 
-        window.selectModel = function(modelId) {
-            selectedModel = modelId;
-            renderModelBoxes();
+        window.toggleBrandGroup = function(brandId) {
+            if (activeBrandGroup === brandId) {
+                activeBrandGroup = null;
+                selectedModel = "all";
+            } else {
+                activeBrandGroup = brandId;
+                selectedModel = brandId;
+            }
+            renderBrandsStack();
+            filterProducts();
+        }
+
+        window.selectCarInsideBrand = function(brandId, carName) {
+            activeBrandGroup = brandId;
+            selectedModel = carName === "all" ? brandId : carName;
+            renderBrandsStack();
             filterProducts();
         }
 
         window.resetFilters = function() {
+            activeBrandGroup = null;
             selectedModel = "all";
             document.getElementById('search-input').value = "";
-            renderModelBoxes();
+            renderBrandsStack();
             filterProducts();
         }
 
@@ -1078,7 +1293,10 @@
                         pSubmodels.some(sub => sub.toLowerCase().includes(selectedModel.toLowerCase())) ||
                         (p.desc && p.desc.toLowerCase().includes(selectedModel.toLowerCase()));
 
-                    if (selectedModel === 'Dacia') {
+                    if (selectedModel === 'Renault') {
+                        const renaultList = ["Megane", "Clio", "Kangoo", "Express", "Symbol"];
+                        matchModel = matchesCarBox || pCars.some(m => renaultList.includes(m)) || pSubmodels.some(sub => renaultList.some(r => sub.toLowerCase().includes(r.toLowerCase())));
+                    } else if (selectedModel === 'Dacia') {
                         const daciaList = ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
                         const matchesDaciaGroup =
                             pCars.some(m => daciaList.includes(m)) ||
@@ -1270,23 +1488,24 @@
             document.getElementById('tab-login').className = t === 'login' ? "w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm" : "w-1/2 py-2 font-bold text-slate-400 text-sm";
             document.getElementById('tab-register').className = t !== 'login' ? "w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm" : "w-1/2 py-2 font-bold text-slate-400 text-sm";
         }
-        window.handleCustomerLogin = function(e) {
+        window.handleCustomerLogin = async function(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim();
             currentUser = { name: email.split('@')[0], email: email };
             localStorage.setItem('auto_current_user', JSON.stringify(currentUser));
             renderSidebarContent();
+            await recordVisitToCloud(email, currentUser.name);
             alert('مرحباً بك في حسابك!');
             closeCustomerModal();
         }
-        window.handleCustomerRegister = function(e) {
+        window.handleCustomerRegister = async function(e) {
             e.preventDefault();
-            currentUser = {
-                name: document.getElementById('reg-name').value,
-                email: document.getElementById('reg-email').value
-            };
+            const nameVal = document.getElementById('reg-name').value.trim();
+            const emailVal = document.getElementById('reg-email').value.trim();
+            currentUser = { name: nameVal, email: emailVal };
             localStorage.setItem('auto_current_user', JSON.stringify(currentUser));
             renderSidebarContent();
+            await recordVisitToCloud(emailVal, nameVal);
             alert('تم إنشاء حسابك وحفظه بنجاح!');
             closeCustomerModal();
         }
@@ -1477,7 +1696,8 @@
 
         renderModelCheckboxesInForm([], {});
         renderSidebarContent();
-        renderModelBoxes();
+        renderBrandsStack();
+        recordVisitToCloud();
         fetchProductsFromCloud();
     </script>
 </body>
