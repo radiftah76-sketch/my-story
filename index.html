@@ -145,7 +145,6 @@
     <!-- شعار Renault الكبير الاحترافي وتحته مربعات السيارات (بما فيها Dacia و Nissan) -->
     <section id="renault-showcase" class="container mx-auto px-4 pt-8 pb-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm">
-            <!-- شعار Renault كبير واحترافي في الأعلى -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-5 mb-6 border-b border-slate-200 dark:border-slate-800">
                 <div onclick="resetFilters()" class="flex items-center gap-4 cursor-pointer group">
                     <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-slate-950 dark:bg-slate-800 border-2 border-amber-500/50 group-hover:border-amber-500 flex items-center justify-center p-3 shadow-lg transition">
@@ -163,15 +162,14 @@
                 </button>
             </div>
 
-            <!-- مربعات أسماء السيارات (Megane, Clio, Kangoo, Express, Symbol + Dacia + Nissan) -->
             <div id="models-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
         </div>
     </section>
 
-    <!-- لوحة تحكم المالك (إضافة وتعديل مع تعدد الصور، جميع السيارات وموديلاتها، وخيار Ancien / Nouveau Model) -->
+    <!-- لوحة تحكم المالك -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
-        <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
-            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
+        <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl space-y-6">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
                 <h2 id="admin-form-title" class="text-lg font-black text-amber-500">لوحة تحكم المالك - إضافة منتج جديد</h2>
                 <div class="flex gap-2">
                     <button id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold">إلغاء التعديل</button>
@@ -190,14 +188,14 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اختيار اسم السيارة، موديلاتها/أجيالها، وخيار Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
+                <!-- اختيار الموديل / الجيل + Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
                             <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
                                 1. اختر اسم السيارة (يمكنك اختيار سيارة واحدة أو أكثر):
                             </label>
-                            <span class="text-[11px] text-slate-400">عند اختيار أي موديل للسيارة سيظهر لك خيار تحديد (Ancien Model أو Nouveau Model) خاص بإعدادات المالك فقط.</span>
+                            <span class="text-[11px] text-slate-400">عند اختيار موديل مثل Clio 5 أو Qashqai وتحديد Ancien Model أو Nouveau Model، سيظهر في خانة المنتج كما اخترته دون إضافة اسم السيارة الرئيسي بشكل منفصل.</span>
                         </div>
                         <button type="button" onclick="selectAllCarsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
                             تحديد / إلغاء كل السيارات
@@ -208,7 +206,7 @@
 
                     <div id="form-submodels-container" class="hidden pt-3 border-t dark:border-slate-700 space-y-3">
                         <label class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block">
-                            2. حدد الموديلات / الأجيال ونوع الموديل (Ancien Model / Nouveau Model):
+                            2. حدد الموديل / الجيل واختر (Ancien Model أو Nouveau Model):
                         </label>
                         <div id="form-submodels-list" class="space-y-3"></div>
                     </div>
@@ -230,6 +228,21 @@
                     <button type="submit" id="publish-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition">نشر المنتج في المتجر (سحابياً)</button>
                 </div>
             </form>
+
+            <!-- ميزة ترتيب المنتجات المرفوعة داخل لوحة المالك -->
+            <div class="pt-5 border-t dark:border-slate-800 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 dark:text-white">ترتيب المنتجات المرفوعة في المتجر</h3>
+                        <p class="text-[11px] text-slate-400">حرّك أي منتج للأعلى أو للأسفل أو غيّر رقمه الترتيبي ثم احفظ الترتيب ليظهر بنفس التسلسل للزبناء.</p>
+                    </div>
+                    <button type="button" id="save-order-btn" onclick="saveProductsOrderToCloud()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>حفظ الترتيب في السحابة</span>
+                    </button>
+                </div>
+                <div id="admin-sort-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+            </div>
         </div>
     </section>
 
@@ -365,6 +378,7 @@
             if (user) {
                 isAdmin = true;
                 document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminSortList();
                 filterProducts();
             } else {
                 isAdmin = false;
@@ -412,7 +426,7 @@
             }
         };
 
-        // مربعات أسماء السيارات في واجهة الموقع (تبقى بأسماء السيارات المعتادة دون تفاصيل الموديلات الفرعية)
+        // مربعات أسماء السيارات في واجهة الموقع
         const carModelBoxes = [
             { id: "all", name: "الكل", sub: "Renault • Dacia • Nissan", icon: "fa-border-all", logo: null },
             { id: "Megane", name: "Megane", sub: "Renault", icon: "fa-car", logo: null },
@@ -619,16 +633,113 @@
             filterProducts();
         }
 
+        function sortProductsArray(list) {
+            return [...list].sort((a, b) => {
+                const orderA = typeof a.sortOrder === 'number' ? a.sortOrder : Number.MAX_SAFE_INTEGER;
+                const orderB = typeof b.sortOrder === 'number' ? b.sortOrder : Number.MAX_SAFE_INTEGER;
+                if (orderA !== orderB) return orderA - orderB;
+                const timeA = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : (a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0);
+                const timeB = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : (b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0);
+                return timeB - timeA;
+            });
+        }
+
+        function renderAdminSortList() {
+            const sortContainer = document.getElementById('admin-sort-list');
+            if (!sortContainer) return;
+
+            if (products.length === 0) {
+                sortContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">لا توجد منتجات لترتيبها حالياً.</p>`;
+                return;
+            }
+
+            sortContainer.innerHTML = products.map((p, idx) => {
+                const imgs = getProductImages(p);
+                return `
+                    <div class="flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-800/80 border dark:border-slate-700 rounded-xl p-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 font-black text-xs flex items-center justify-center shrink-0">${idx + 1}</span>
+                            <img src="${imgs[0]}" class="w-10 h-10 rounded-lg object-cover shrink-0 border dark:border-slate-700">
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold truncate">${p.name}</p>
+                                <p class="text-[10px] text-slate-400">${p.price} DH</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1 shrink-0">
+                            <input type="number" min="1" max="${products.length}" value="${idx + 1}" onchange="setProductPosition('${p.id}', this.value)" class="w-12 text-center bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-lg py-1 text-xs font-bold" title="رقم الترتيب">
+                            <button type="button" onclick="moveProductInOrder(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 disabled:opacity-30 hover:bg-amber-500 hover:text-slate-950 text-xs flex items-center justify-center transition" title="تحريك للأعلى">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                            <button type="button" onclick="moveProductInOrder(${idx}, 1)" ${idx === products.length - 1 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 disabled:opacity-30 hover:bg-amber-500 hover:text-slate-950 text-xs flex items-center justify-center transition" title="تحريك للأسفل">
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.moveProductInOrder = function(currentIndex, delta) {
+            const targetIndex = currentIndex + delta;
+            if (targetIndex < 0 || targetIndex >= products.length) return;
+            const [moved] = products.splice(currentIndex, 1);
+            products.splice(targetIndex, 0, moved);
+            products.forEach((item, i) => { item.sortOrder = i + 1; });
+            renderAdminSortList();
+            filterProducts();
+        }
+
+        window.setProductPosition = function(productId, newPosValue) {
+            const currentIndex = products.findIndex(p => p.id === productId);
+            if (currentIndex === -1) return;
+            let targetIndex = parseInt(newPosValue, 10) - 1;
+            if (isNaN(targetIndex)) return;
+            targetIndex = Math.max(0, Math.min(products.length - 1, targetIndex));
+            const [moved] = products.splice(currentIndex, 1);
+            products.splice(targetIndex, 0, moved);
+            products.forEach((item, i) => { item.sortOrder = i + 1; });
+            renderAdminSortList();
+            filterProducts();
+        }
+
+        window.saveProductsOrderToCloud = async function() {
+            const btn = document.getElementById('save-order-btn');
+            if (!btn) return;
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>جاري الحفظ...</span>`;
+
+            try {
+                for (let i = 0; i < products.length; i++) {
+                    const p = products[i];
+                    const orderVal = i + 1;
+                    p.sortOrder = orderVal;
+                    await updateDoc(doc(db, "produits", p.id), { sortOrder: orderVal });
+                }
+                alert('تم حفظ ترتيب المنتجات في السحابة بنجاح!');
+                filterProducts();
+            } catch (error) {
+                console.error("خطأ في حفظ الترتيب:", error);
+                alert("تعذر حفظ الترتيب في السحابة.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
         async function fetchProductsFromCloud() {
             const spinner = document.getElementById('loading-spinner');
             try {
                 const q = query(productsCol, orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
-                products = [];
+                const fetched = [];
                 querySnapshot.forEach((docSnap) => {
-                    products.push({ id: docSnap.id, ...docSnap.data() });
+                    fetched.push({ id: docSnap.id, ...docSnap.data() });
                 });
+                products = sortProductsArray(fetched);
                 spinner.style.display = 'none';
+                if (isAdmin) renderAdminSortList();
                 filterProducts();
             } catch (error) {
                 console.error("خطأ في جلب المنتجات:", error);
@@ -789,7 +900,7 @@
 
         window.filterProducts = function() {
             const queryText = document.getElementById('search-input').value.toLowerCase().trim();
-            const filtered = products.filter(p => {
+            const filtered = sortProductsArray(products).filter(p => {
                 let matchModel = true;
                 if (selectedModel !== 'all') {
                     const pCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
@@ -853,20 +964,22 @@
                     </div>
                 ` : '';
 
-                // في واجهة الزبائن تظهر أسماء السيارات فقط، بينما تظهر تفاصيل الموديلات الفرعية و Ancien / Nouveau Model للمالك فقط عند تسجيل دخوله
+                // في واجهة الزبائن تظهر أسماء السيارات فقط
                 const publicCars = Array.isArray(p.cars) && p.cars.length
                     ? p.cars
                     : (Array.isArray(p.models) && p.models.length ? p.models : ["Renault"]);
 
+                const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
+
+                // في خانة المنتج للمالك يظهر الموديل المختار + نوعه فقط (مثل Clio 5 • Ancien Model أو Qashqai J11 • Nouveau Model) بدون اسم السيارة الرئيسي بشكل منفصل
                 const submodelEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
-                const adminSubmodelsBadges = isAdmin && Array.isArray(p.submodels) && p.submodels.length
+                const hasSubmodels = Array.isArray(p.submodels) && p.submodels.length > 0;
+                const adminSubmodelsBadges = isAdmin && hasSubmodels
                     ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.submodels.map(sub => {
                         const eraLabel = submodelEras[sub] ? ` • ${submodelEras[sub]}` : '';
                         return `<span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded">${sub}${eraLabel}</span>`;
                     }).join('')}</div>`
                     : '';
-
-                const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
 
                 const galleryControls = imgs.length > 1 ? `
                     <button type="button" onclick="cycleProductImage('${p.id}', -1, ${imgs.length})" class="absolute top-1/2 right-2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs transition" title="الصورة السابقة">
@@ -1199,6 +1312,7 @@
                     if (compressedImages.length === 0) {
                         compressedImages = ["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80"];
                     }
+                    const nextOrder = products.length + 1;
                     const newProductData = {
                         name: document.getElementById('prod-name').value,
                         brand: mainBrand,
@@ -1206,6 +1320,7 @@
                         models: selectedCars,
                         submodels: selectedSubmodels,
                         submodelEras: submodelEras,
+                        sortOrder: nextOrder,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value,
                         images: compressedImages,
