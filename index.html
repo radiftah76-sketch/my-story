@@ -27,12 +27,11 @@
         }
         .brand-card.active {
             border-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.14);
-            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.2);
         }
         .model-box.active {
             border-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.16);
+            background: rgba(245, 158, 11, 0.14);
             transform: translateY(-2px);
         }
         .product-card {
@@ -158,7 +157,10 @@
     <!-- الواجهة الرئيسية -->
     <section class="bg-slate-900 text-white py-10 md:py-14 text-center px-4 relative overflow-hidden">
         <div class="max-w-3xl mx-auto relative z-10">
-            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">قطع غيار ومعدات السيارات الأصلية في المغرب</h1>
+            <div class="inline-block bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs md:text-sm font-extrabold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
+                RENAULT • DACIA • NISSAN
+            </div>
+            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">معدات وقطع غيار السيارات</h1>
             <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-5">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
             
             <div class="relative max-w-xl mx-auto mb-5">
@@ -175,7 +177,7 @@
         </div>
     </section>
 
-    <!-- الشعارات الثلاثة (Renault - Dacia - Nissan بدون شعار) واحد تحت واحد، وتظهر سيارات كل شعار عند الضغط عليه فقط -->
+    <!-- الشعارات الثلاثة (Renault - Dacia - Nissan بشعاره) واحد تحت واحد، وتظهر سيارات كل شعار عند الضغط عليه فقط -->
     <section id="brands-showcase" class="container mx-auto px-4 pt-6 pb-2">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 shadow-sm">
             <div class="flex justify-end pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
@@ -413,7 +415,7 @@
             {
                 id: "Nissan",
                 name: "Nissan",
-                logo: null,
+                logo: "https://www.carlogos.org/car-logos/nissan-logo.png",
                 cars: ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"]
             }
         ];
@@ -573,7 +575,7 @@
         const translations = {
             ar: {
                 track_btn: "تتبع الطلب", login_btn: "حسابي",
-                hero_title: "قطع غيار ومعدات السيارات الأصلية في المغرب",
+                hero_title: "معدات وقطع غيار السيارات",
                 hero_subtitle: "ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.",
                 browse_btn: "تصفح حسب السيارة", compare_btn: "مقارنة القطع",
                 show_all: "عرض الكل", all_models: "الكل",
@@ -585,7 +587,7 @@
             },
             fr: {
                 track_btn: "Suivi", login_btn: "Compte",
-                hero_title: "Pièces et équipements auto d'origine au Maroc",
+                hero_title: "Équipements et pièces auto",
                 hero_subtitle: "Recherchez votre pièce et commandez directement sur WhatsApp.",
                 browse_btn: "Choisir ma voiture", compare_btn: "Comparer",
                 show_all: "Tout voir", all_models: "Tous",
@@ -597,7 +599,7 @@
             },
             en: {
                 track_btn: "Track", login_btn: "Account",
-                hero_title: "Original Car Parts & Equipment in Morocco",
+                hero_title: "Auto Equipment & Car Parts",
                 hero_subtitle: "Search for the part you need and order directly via WhatsApp.",
                 browse_btn: "Select Car", compare_btn: "Compare",
                 show_all: "Show All", all_models: "All",
@@ -1174,7 +1176,7 @@
             filterProducts();
         }
 
-        // عرض الشعارات الثلاثة واحد تحت واحد (بدون شعار لنيسان بل اسمه فقط، وبدون جملة فرعية تحت الشعار)
+        // عرض الشعارات الثلاثة واحد تحت واحد بخلفية رمادية فاتحة وشعار لكل علامة (بما فيها Nissan بشعاره)
         function renderBrandsStack() {
             const container = document.getElementById('brands-stack');
             if (!container) return;
@@ -1185,23 +1187,11 @@
                     ? 'active border-amber-500'
                     : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
 
-                const visualBox = brand.logo
-                    ? `
-                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 border border-slate-700 flex items-center justify-center p-2.5 shrink-0 shadow">
-                            <img src="${brand.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${brand.name}" class="w-full h-full object-contain">
-                        </div>
-                    `
-                    : `
-                        <div class="px-4 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center shrink-0">
-                            <span class="text-sm md:text-base font-black text-amber-600 dark:text-amber-400 tracking-wide">${brand.name}</span>
-                        </div>
-                    `;
-
                 const carsPanelHtml = isExpanded ? `
                     <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2.5" onclick="event.stopPropagation()">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-black text-amber-600 dark:text-amber-400">${brand.name}</span>
-                            <button type="button" onclick="selectCarInsideBrand('${brand.id}', 'all')" class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${selectedModel === 'all' ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
+                            <button type="button" onclick="selectCarInsideBrand('${brand.id}', 'all')" class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${selectedModel === 'all' ? 'bg-amber-500 text-slate-950' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}">
                                 ${translations[currentLang].all_models}
                             </button>
                         </div>
@@ -1219,10 +1209,12 @@
                 ` : '';
 
                 return `
-                    <div onclick="toggleBrandGroup('${brand.id}')" class="brand-card ${activeCardStyle} bg-slate-50 dark:bg-slate-800/70 border rounded-2xl p-4 transition cursor-pointer">
+                    <div onclick="toggleBrandGroup('${brand.id}')" class="brand-card ${activeCardStyle} bg-slate-100 dark:bg-slate-800/70 border rounded-2xl p-4 transition cursor-pointer">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3.5">
-                                ${visualBox}
+                                <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 border border-slate-700 flex items-center justify-center p-2.5 shrink-0 shadow">
+                                    <img src="${brand.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${brand.name}" class="w-full h-full object-contain">
+                                </div>
                                 <h3 class="text-base md:text-lg font-black text-slate-900 dark:text-white">${brand.name}</h3>
                             </div>
                             <span class="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border dark:border-slate-700 flex items-center justify-center text-xs text-amber-500 shrink-0">
