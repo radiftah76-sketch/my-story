@@ -142,7 +142,7 @@
         </div>
     </section>
 
-    <!-- شعار Renault الكبير الاحترافي وتحته مربعات السيارات (بما فيها Dacia) -->
+    <!-- شعار Renault الكبير الاحترافي وتحته مربعات السيارات (بما فيها Dacia و Nissan) -->
     <section id="renault-showcase" class="container mx-auto px-4 pt-8 pb-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm">
             <!-- شعار Renault كبير واحترافي في الأعلى -->
@@ -152,9 +152,9 @@
                         <img src="https://www.carlogos.org/car-logos/renault-logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="Renault" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <span class="inline-block text-[11px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full mb-1">RENAULT • MAROC</span>
-                        <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">معدات وقطع غيار Renault</h2>
-                        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">اختر موديل سيارتك في المربعات أسفله لعرض جميع القطع الخاصة بها</p>
+                        <span class="inline-block text-[11px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full mb-1">RENAULT • DACIA • NISSAN</span>
+                        <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">معدات وقطع غيار السيارات</h2>
+                        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">اختر اسم السيارة في المربعات أسفله لعرض جميع القطع الخاصة بها</p>
                     </div>
                 </div>
 
@@ -163,12 +163,12 @@
                 </button>
             </div>
 
-            <!-- مربعات أسماء السيارات (Megane, Clio, Kangoo, Express, Symbol + Dacia) -->
+            <!-- مربعات أسماء السيارات (Megane, Clio, Kangoo, Express, Symbol + Dacia + Nissan) -->
             <div id="models-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
         </div>
     </section>
 
-    <!-- لوحة تحكم المالك (إضافة وتعديل مع تعدد الصور وجميع السيارات وموديلاتها) -->
+    <!-- لوحة تحكم المالك (إضافة وتعديل مع تعدد الصور، جميع السيارات وموديلاتها، وخيار Ancien / Nouveau Model) -->
     <section id="admin-panel" class="hidden container mx-auto px-4 mt-6">
         <div class="bg-white dark:bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 shadow-xl">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-6">
@@ -190,14 +190,14 @@
                     <input type="number" id="prod-price" placeholder="250" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 </div>
 
-                <!-- اختيار اسم السيارة وموديلاتها / أجيالها (خاص بالمالك فقط) -->
+                <!-- اختيار اسم السيارة، موديلاتها/أجيالها، وخيار Ancien Model / Nouveau Model (خاص بالمالك فقط) -->
                 <div class="md:col-span-2 bg-slate-50 dark:bg-slate-800/60 border dark:border-slate-700 rounded-xl p-4 space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
                             <label class="text-xs font-extrabold text-amber-600 dark:text-amber-400 block">
                                 1. اختر اسم السيارة (يمكنك اختيار سيارة واحدة أو أكثر):
                             </label>
-                            <span class="text-[11px] text-slate-400">ستظهر فوراً موديلات وأجيال كل سيارة اخترتها لتحديدها بدقة (خاص بإعدادات المالك فقط).</span>
+                            <span class="text-[11px] text-slate-400">عند اختيار أي موديل للسيارة سيظهر لك خيار تحديد (Ancien Model أو Nouveau Model) خاص بإعدادات المالك فقط.</span>
                         </div>
                         <button type="button" onclick="selectAllCarsInForm()" class="text-[11px] font-bold bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
                             تحديد / إلغاء كل السيارات
@@ -208,7 +208,7 @@
 
                     <div id="form-submodels-container" class="hidden pt-3 border-t dark:border-slate-700 space-y-3">
                         <label class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block">
-                            2. حدد الموديلات / الأجيال للسيارات المختارة:
+                            2. حدد الموديلات / الأجيال ونوع الموديل (Ancien Model / Nouveau Model):
                         </label>
                         <div id="form-submodels-list" class="space-y-3"></div>
                     </div>
@@ -412,9 +412,9 @@
             }
         };
 
-        // المربعات أسفل شعار Renault في واجهة الموقع (تبقى بأسماء السيارات المعتادة دون تفاصيل الموديلات الفرعية)
+        // مربعات أسماء السيارات في واجهة الموقع (تبقى بأسماء السيارات المعتادة دون تفاصيل الموديلات الفرعية)
         const carModelBoxes = [
-            { id: "all", name: "الكل", sub: "Renault & Dacia", icon: "fa-border-all", logo: null },
+            { id: "all", name: "الكل", sub: "Renault • Dacia • Nissan", icon: "fa-border-all", logo: null },
             { id: "Megane", name: "Megane", sub: "Renault", icon: "fa-car", logo: null },
             { id: "Clio", name: "Clio", sub: "Renault", icon: "fa-car-side", logo: null },
             { id: "Kangoo", name: "Kangoo", sub: "Renault", icon: "fa-van-shuttle", logo: null },
@@ -425,7 +425,13 @@
             { id: "Sandero", name: "Sandero", sub: "Dacia", icon: "fa-car-side", logo: null },
             { id: "Duster", name: "Duster", sub: "Dacia", icon: "fa-truck-monster", logo: null },
             { id: "Dokker", name: "Dokker", sub: "Dacia", icon: "fa-van-shuttle", logo: null },
-            { id: "Lodgy", name: "Lodgy", sub: "Dacia", icon: "fa-shuttle-van", logo: null }
+            { id: "Lodgy", name: "Lodgy", sub: "Dacia", icon: "fa-shuttle-van", logo: null },
+            { id: "Nissan", name: "Nissan", sub: "Alliance", icon: null, logo: "https://www.carlogos.org/car-logos/nissan-logo.png" },
+            { id: "Qashqai", name: "Qashqai", sub: "Nissan", icon: "fa-car-side", logo: null },
+            { id: "Juke", name: "Juke", sub: "Nissan", icon: "fa-car", logo: null },
+            { id: "Micra", name: "Micra", sub: "Nissan", icon: "fa-car-side", logo: null },
+            { id: "Navara", name: "Navara", sub: "Nissan", icon: "fa-truck-pickup", logo: null },
+            { id: "X-Trail", name: "X-Trail", sub: "Nissan", icon: "fa-truck-monster", logo: null }
         ];
 
         // جميع السيارات وموديلاتها / أجيالها في لوحة تحكم المالك فقط
@@ -440,7 +446,13 @@
             "Sandero": ["Sandero 1", "Sandero 2", "Sandero 3", "Sandero Stepway"],
             "Duster": ["Duster 1", "Duster 2", "Duster 3"],
             "Dokker": ["Dokker", "Dokker Van", "Dokker Stepway"],
-            "Lodgy": ["Lodgy", "Lodgy Stepway"]
+            "Lodgy": ["Lodgy", "Lodgy Stepway"],
+            "Nissan": ["Nissan Classic", "Nissan New Gen"],
+            "Qashqai": ["Qashqai J10", "Qashqai J11", "Qashqai J12"],
+            "Juke": ["Juke F15", "Juke F16"],
+            "Micra": ["Micra K12", "Micra K13", "Micra K14"],
+            "Navara": ["Navara D22", "Navara D40", "Navara NP300"],
+            "X-Trail": ["X-Trail T30", "X-Trail T31", "X-Trail T32", "X-Trail T33"]
         };
 
         const selectableProductModels = Object.keys(carModelsCatalog);
@@ -452,7 +464,7 @@
             return null;
         }
 
-        function renderModelCheckboxesInForm(selectedCars = [], selectedSubmodels = []) {
+        function renderModelCheckboxesInForm(selectedCars = [], selectedSubmodels = [], selectedEraBySubmodel = {}) {
             const carsContainer = document.getElementById('form-cars-checkboxes');
             const derivedCars = new Set(selectedCars);
             selectedSubmodels.forEach(sub => {
@@ -470,13 +482,36 @@
                 `;
             }).join('');
 
-            updateSubmodelsSections(selectedSubmodels);
+            updateSubmodelsSections(selectedSubmodels, selectedEraBySubmodel);
         }
 
-        window.updateSubmodelsSections = function(presetSubmodels = null) {
+        window.toggleSubmodelEraRow = function(submodel) {
+            const checkbox = document.querySelector(`input[name="prod-submodels"][value="${CSS.escape(submodel)}"]`);
+            const eraBox = document.getElementById(`era-box-${encodeURIComponent(submodel)}`);
+            if (!checkbox || !eraBox) return;
+
+            if (checkbox.checked) {
+                eraBox.classList.remove('hidden');
+            } else {
+                eraBox.classList.add('hidden');
+                eraBox.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; });
+            }
+        }
+
+        window.updateSubmodelsSections = function(presetSubmodels = null, presetEraMap = null) {
             const activeSubmodels = presetSubmodels !== null
                 ? new Set(presetSubmodels)
                 : new Set(Array.from(document.querySelectorAll('input[name="prod-submodels"]:checked')).map(cb => cb.value));
+
+            const eraMap = new Map();
+            if (presetEraMap && typeof presetEraMap === 'object') {
+                Object.entries(presetEraMap).forEach(([sub, era]) => eraMap.set(sub, era));
+            }
+            document.querySelectorAll('input[name="prod-submodels"]:checked').forEach(cb => {
+                const sub = cb.value;
+                const checkedRadio = document.querySelector(`input[name="era-${encodeURIComponent(sub)}"]:checked`);
+                if (checkedRadio) eraMap.set(sub, checkedRadio.value);
+            });
 
             const checkedCars = Array.from(document.querySelectorAll('input[name="prod-cars"]:checked')).map(cb => cb.value);
             const container = document.getElementById('form-submodels-container');
@@ -499,14 +534,29 @@
                                 تحديد الكل
                             </button>
                         </div>
-                        <div class="flex flex-wrap gap-1.5">
+                        <div class="space-y-2">
                             ${subs.map(sub => {
-                                const isChecked = activeSubmodels.has(sub) ? 'checked' : '';
+                                const isChecked = activeSubmodels.has(sub);
+                                const encodedSub = encodeURIComponent(sub);
+                                const currentEra = eraMap.get(sub) || "";
                                 return `
-                                    <label class="inline-flex items-center gap-1 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer hover:border-emerald-500">
-                                        <input type="checkbox" name="prod-submodels" data-car="${car}" value="${sub}" ${isChecked} class="accent-emerald-500 rounded">
-                                        <span>${sub}</span>
-                                    </label>
+                                    <div class="bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+                                        <label class="inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+                                            <input type="checkbox" name="prod-submodels" data-car="${car}" value="${sub}" ${isChecked ? 'checked' : ''} onchange="toggleSubmodelEraRow('${sub.replace(/'/g, "\\'")}')" class="accent-emerald-500 rounded">
+                                            <span>${sub}</span>
+                                        </label>
+
+                                        <div id="era-box-${encodedSub}" class="${isChecked ? 'flex' : 'hidden'} items-center gap-2 text-[11px] font-bold">
+                                            <label class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg cursor-pointer">
+                                                <input type="radio" name="era-${encodedSub}" value="Ancien Model" ${currentEra === 'Ancien Model' ? 'checked' : ''} class="accent-amber-500">
+                                                <span>Ancien Model</span>
+                                            </label>
+                                            <label class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg cursor-pointer">
+                                                <input type="radio" name="era-${encodedSub}" value="Nouveau Model" ${currentEra === 'Nouveau Model' ? 'checked' : ''} class="accent-emerald-500">
+                                                <span>Nouveau Model</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 `;
                             }).join('')}
                         </div>
@@ -518,7 +568,10 @@
         window.toggleCarSubmodels = function(car) {
             const boxes = document.querySelectorAll(`input[name="prod-submodels"][data-car="${car}"]`);
             const allChecked = Array.from(boxes).every(b => b.checked);
-            boxes.forEach(b => { b.checked = !allChecked; });
+            boxes.forEach(b => {
+                b.checked = !allChecked;
+                toggleSubmodelEraRow(b.value);
+            });
         }
 
         window.selectAllCarsInForm = function() {
@@ -753,6 +806,12 @@
                             pCars.some(m => daciaList.includes(m)) ||
                             pSubmodels.some(sub => daciaList.some(d => sub.toLowerCase().includes(d.toLowerCase())));
                         matchModel = matchesCarBox || matchesDaciaGroup;
+                    } else if (selectedModel === 'Nissan') {
+                        const nissanList = ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"];
+                        const matchesNissanGroup =
+                            pCars.some(m => nissanList.includes(m)) ||
+                            pSubmodels.some(sub => nissanList.some(n => sub.toLowerCase().includes(n.toLowerCase())));
+                        matchModel = matchesCarBox || matchesNissanGroup;
                     } else {
                         matchModel = matchesCarBox;
                     }
@@ -794,13 +853,17 @@
                     </div>
                 ` : '';
 
-                // في واجهة الزبائن تظهر أسماء السيارات فقط، بينما تظهر تفاصيل الموديلات الفرعية للمالك فقط عند تسجيل دخوله
+                // في واجهة الزبائن تظهر أسماء السيارات فقط، بينما تظهر تفاصيل الموديلات الفرعية و Ancien / Nouveau Model للمالك فقط عند تسجيل دخوله
                 const publicCars = Array.isArray(p.cars) && p.cars.length
                     ? p.cars
                     : (Array.isArray(p.models) && p.models.length ? p.models : ["Renault"]);
 
+                const submodelEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
                 const adminSubmodelsBadges = isAdmin && Array.isArray(p.submodels) && p.submodels.length
-                    ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.submodels.map(sub => `<span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded">${sub}</span>`).join('')}</div>`
+                    ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.submodels.map(sub => {
+                        const eraLabel = submodelEras[sub] ? ` • ${submodelEras[sub]}` : '';
+                        return `<span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded">${sub}${eraLabel}</span>`;
+                    }).join('')}</div>`
                     : '';
 
                 const carBadges = publicCars.map(c => `<span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">${c}</span>`).join(' ');
@@ -1044,7 +1107,8 @@
 
             const existingCars = Array.isArray(p.cars) ? p.cars : (Array.isArray(p.models) ? p.models : []);
             const existingSubs = Array.isArray(p.submodels) ? p.submodels : [];
-            renderModelCheckboxesInForm(existingCars, existingSubs);
+            const existingEras = p.submodelEras && typeof p.submodelEras === 'object' ? p.submodelEras : {};
+            renderModelCheckboxesInForm(existingCars, existingSubs, existingEras);
 
             const currentImgs = getProductImages(p);
             document.getElementById('prod-image-preview').innerHTML = currentImgs.map((src, idx) => `
@@ -1065,7 +1129,7 @@
             document.getElementById('edit-product-id').value = "";
             document.querySelector('#admin-panel form').reset();
             document.getElementById('prod-image-preview').innerHTML = '';
-            renderModelCheckboxesInForm([], []);
+            renderModelCheckboxesInForm([], [], {});
             document.getElementById('admin-form-title').innerText = "لوحة تحكم المالك - إضافة منتج جديد";
             document.getElementById('publish-btn').innerText = "نشر المنتج في المتجر (سحابياً)";
             document.getElementById('cancel-edit-btn').classList.add('hidden');
@@ -1079,10 +1143,24 @@
 
             const selectedCars = Array.from(document.querySelectorAll('input[name="prod-cars"]:checked')).map(cb => cb.value);
             const selectedSubmodels = Array.from(document.querySelectorAll('input[name="prod-submodels"]:checked')).map(cb => cb.value);
+            const submodelEras = {};
+            selectedSubmodels.forEach(sub => {
+                const checkedEra = document.querySelector(`input[name="era-${encodeURIComponent(sub)}"]:checked`);
+                if (checkedEra) {
+                    submodelEras[sub] = checkedEra.value;
+                }
+            });
 
-            const mainBrand = selectedCars.some(m => ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"].includes(m)) && !selectedCars.some(m => ["Megane", "Clio", "Kangoo", "Express", "Symbol"].includes(m))
-                ? "Dacia"
-                : "Renault";
+            const nissanSet = ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"];
+            const daciaSet = ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
+            const renaultSet = ["Megane", "Clio", "Kangoo", "Express", "Symbol"];
+
+            let mainBrand = "Renault";
+            if (selectedCars.some(m => nissanSet.includes(m)) && !selectedCars.some(m => renaultSet.includes(m) || daciaSet.includes(m))) {
+                mainBrand = "Nissan";
+            } else if (selectedCars.some(m => daciaSet.includes(m)) && !selectedCars.some(m => renaultSet.includes(m) || nissanSet.includes(m))) {
+                mainBrand = "Dacia";
+            }
 
             try {
                 const fileInput = document.getElementById('prod-image');
@@ -1105,6 +1183,7 @@
                         cars: selectedCars,
                         models: selectedCars,
                         submodels: selectedSubmodels,
+                        submodelEras: submodelEras,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value
                     };
@@ -1126,6 +1205,7 @@
                         cars: selectedCars,
                         models: selectedCars,
                         submodels: selectedSubmodels,
+                        submodelEras: submodelEras,
                         price: Number(document.getElementById('prod-price').value),
                         desc: document.getElementById('prod-desc').value,
                         images: compressedImages,
@@ -1160,7 +1240,7 @@
             }
         }
 
-        renderModelCheckboxesInForm([], []);
+        renderModelCheckboxesInForm([], [], {});
         renderSidebarContent();
         renderModelBoxes();
         fetchProductsFromCloud();
