@@ -25,13 +25,9 @@
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
         }
-        .brand-card.active {
-            border-color: #f59e0b;
-            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.2);
-        }
         .model-box.active {
             border-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.14);
+            background: rgba(245, 158, 11, 0.16);
             transform: translateY(-2px);
         }
         .product-card {
@@ -49,7 +45,7 @@
     <header class="glass-header text-white shadow-xl sticky top-0 z-50 border-b border-slate-800">
         <div class="container mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <button onclick="openSideMenu()" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 text-white p-2.5 rounded-xl transition shadow-md" title="القائمة">
+                <button onclick="openSideMenu()" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 text-white p-2.5 rounded-xl transition shadow-md" title="القائمة وحسابي">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
 
@@ -93,7 +89,7 @@
         </div>
     </header>
 
-    <!-- القائمة الجانبية (تحتوي على ملفي الشخصي ومشترياتي، وإذا كان المالك مسجلاً دخول تظهر قائمة من زار المتجر في الجانب) -->
+    <!-- القائمة الجانبية -->
     <div id="side-menu-overlay" onclick="closeSideMenu()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"></div>
     <aside id="side-menu-drawer" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white dark:bg-slate-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between border-l dark:border-slate-800">
         <div class="p-5 overflow-y-auto flex-1">
@@ -108,34 +104,6 @@
             </div>
 
             <div id="sidebar-user-card" class="bg-slate-100 dark:bg-slate-800/80 p-4 rounded-2xl mb-6 border dark:border-slate-700"></div>
-
-            <!-- قسم من زار المتجر يظهر في القائمة الجانبية للمالك فقط -->
-            <div id="sidebar-admin-visitors" class="hidden mb-6 bg-amber-500/5 dark:bg-slate-800/50 border border-amber-500/30 rounded-2xl p-3.5">
-                <div class="flex items-center justify-between gap-2 mb-3">
-                    <h4 class="font-black text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                        <i class="fa-solid fa-users-viewfinder"></i>
-                        <span>من زار المتجر</span>
-                    </h4>
-                    <button type="button" onclick="fetchVisitorsFromCloud()" class="text-[10px] font-bold bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition">
-                        تحديث
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 text-center mb-3">
-                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2">
-                        <span class="text-[10px] text-slate-400 block">إجمالي الزيارات</span>
-                        <span id="stat-total-visits" class="text-sm font-black text-amber-500">0</span>
-                    </div>
-                    <div class="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2">
-                        <span class="text-[10px] text-slate-400 block">زيارات اليوم</span>
-                        <span id="stat-today-visits" class="text-sm font-black text-emerald-500">0</span>
-                    </div>
-                </div>
-
-                <div id="admin-visitors-list" class="space-y-2 max-h-56 overflow-y-auto pr-0.5">
-                    <p class="text-[11px] text-slate-400 text-center py-2">جاري تحميل الزوار...</p>
-                </div>
-            </div>
 
             <div>
                 <h4 class="font-extrabold text-sm mb-3 flex items-center justify-between">
@@ -155,21 +123,18 @@
     </aside>
 
     <!-- الواجهة الرئيسية -->
-    <section class="bg-slate-900 text-white py-10 md:py-14 text-center px-4 relative overflow-hidden">
+    <section class="bg-slate-900 text-white py-12 md:py-16 text-center px-4 relative overflow-hidden">
         <div class="max-w-3xl mx-auto relative z-10">
-            <div class="inline-block bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs md:text-sm font-extrabold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
-                RENAULT • DACIA • NISSAN
-            </div>
-            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">معدات وقطع غيار السيارات</h1>
-            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-5">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
+            <h1 data-i18n="hero_title" class="text-2xl md:text-4xl font-black mb-3">قطع غيار ومعدات السيارات الأصلية في المغرب</h1>
+            <p data-i18n="hero_subtitle" class="text-slate-300 text-sm md:text-base mb-6">ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.</p>
             
-            <div class="relative max-w-xl mx-auto mb-5">
+            <div class="relative max-w-xl mx-auto mb-6">
                 <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="ابحث عن قطعة غيار (مثال: مكابح، فيلتر، LED...)" class="w-full py-3.5 px-5 pr-12 rounded-2xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/50 text-sm md:text-base font-medium">
                 <i id="search-icon" class="fa-solid fa-magnifying-glass absolute top-4 right-4 text-slate-400 text-lg"></i>
             </div>
 
             <div class="flex flex-wrap justify-center gap-3">
-                <a href="#brands-showcase" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
+                <a href="#renault-showcase" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md" data-i18n="browse_btn">تصفح حسب السيارة</a>
                 <button onclick="openCompareModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition">
                     <span data-i18n="compare_btn">مقارنة القطع</span> (<span id="compare-count">0</span>)
                 </button>
@@ -177,16 +142,27 @@
         </div>
     </section>
 
-    <!-- الشعارات الثلاثة (Renault - Dacia - Nissan بشعاره) واحد تحت واحد، وتظهر سيارات كل شعار عند الضغط عليه فقط -->
-    <section id="brands-showcase" class="container mx-auto px-4 pt-6 pb-2">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 shadow-sm">
-            <div class="flex justify-end pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="resetFilters()" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs transition" data-i18n="show_all">
+    <!-- شعار Renault الكبير الاحترافي وتحته مربعات السيارات (بما فيها Dacia و Nissan) -->
+    <section id="renault-showcase" class="container mx-auto px-4 pt-8 pb-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-5 mb-6 border-b border-slate-200 dark:border-slate-800">
+                <div onclick="resetFilters()" class="flex items-center gap-4 cursor-pointer group">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-slate-950 dark:bg-slate-800 border-2 border-amber-500/50 group-hover:border-amber-500 flex items-center justify-center p-3 shadow-lg transition">
+                        <img src="https://www.carlogos.org/car-logos/renault-logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="Renault" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <span class="inline-block text-[11px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full mb-1">RENAULT • DACIA • NISSAN</span>
+                        <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">معدات وقطع غيار السيارات</h2>
+                        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">اختر اسم السيارة في المربعات أسفله لعرض جميع القطع الخاصة بها</p>
+                    </div>
+                </div>
+
+                <button onclick="resetFilters()" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 font-bold px-4 py-2 rounded-xl text-xs transition" data-i18n="show_all">
                     عرض الكل
                 </button>
             </div>
 
-            <div id="brands-stack" class="flex flex-col gap-3"></div>
+            <div id="models-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
         </div>
     </section>
 
@@ -266,8 +242,8 @@
     </section>
 
     <!-- قائمة المنتجات -->
-    <main class="container mx-auto px-4 py-6">
-        <div class="flex justify-between items-center mb-5">
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold" data-i18n="available_parts">القطع المتاحة</h2>
             <span id="results-count" class="text-sm text-slate-500 font-bold"></span>
         </div>
@@ -325,13 +301,13 @@
                 <button onclick="switchAuthTab('register')" id="tab-register" class="w-1/2 py-2 font-bold text-slate-400 text-sm">حساب جديد</button>
             </div>
             <form id="login-form" onsubmit="handleCustomerLogin(event)" class="space-y-3">
-                <input type="email" id="login-email" placeholder="البريد الإلكتروني (Gmail)" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="email" id="login-email" placeholder="البريد الإلكتروني" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <input type="password" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded-xl font-bold text-sm">دخول</button>
             </form>
             <form id="register-form" onsubmit="handleCustomerRegister(event)" class="hidden space-y-3">
                 <input type="text" id="reg-name" placeholder="الاسم الكامل" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
-                <input type="email" id="reg-email" placeholder="البريد الإلكتروني (Gmail)" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
+                <input type="email" id="reg-email" placeholder="البريد الإلكتروني" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <input type="password" placeholder="كلمة المرور" required class="w-full border dark:border-slate-700 dark:bg-slate-800 rounded-xl px-3 py-2 text-sm">
                 <button type="submit" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-sm">إنشاء الحساب</button>
             </form>
@@ -380,13 +356,11 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         const productsCol = collection(db, "produits");
-        const visitorsCol = collection(db, "visitors");
 
         const MY_WHATSAPP = "212674247257";
         let cartItems = [];
         let compareList = [];
         let isAdmin = false;
-        let activeBrandGroup = null;
         let selectedModel = "all";
         let currentLang = "ar";
         let products = [];
@@ -399,25 +373,77 @@
         let currentUser = JSON.parse(localStorage.getItem('auto_current_user')) || null;
         let orderHistory = JSON.parse(localStorage.getItem('auto_order_history')) || [];
 
-        const brandGroupsData = [
-            {
-                id: "Renault",
-                name: "Renault",
-                logo: "https://www.carlogos.org/car-logos/renault-logo.png",
-                cars: ["Megane", "Clio", "Kangoo", "Express", "Symbol"]
-            },
-            {
-                id: "Dacia",
-                name: "Dacia",
-                logo: "https://www.carlogos.org/car-logos/dacia-logo.png",
-                cars: ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"]
-            },
-            {
-                id: "Nissan",
-                name: "Nissan",
-                logo: "https://www.carlogos.org/car-logos/nissan-logo.png",
-                cars: ["Nissan", "Qashqai", "Juke", "Micra", "Navara", "X-Trail"]
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                isAdmin = true;
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminSortList();
+                filterProducts();
+            } else {
+                isAdmin = false;
+                document.getElementById('admin-panel').classList.add('hidden');
+                filterProducts();
             }
+        });
+
+        const translations = {
+            ar: {
+                track_btn: "تتبع الطلب", login_btn: "حسابي",
+                hero_title: "قطع غيار ومعدات السيارات الأصلية في المغرب",
+                hero_subtitle: "ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.",
+                browse_btn: "تصفح حسب السيارة", compare_btn: "مقارنة القطع",
+                show_all: "عرض الكل", all_models: "الكل",
+                available_parts: "القطع المتاحة", order_wa: "اطلب عبر واتساب", add_cart: "أضف للسلة",
+                no_results_msg: "لم نجد قطعاً مطابقة لبحثك.", cart_title: "سلة المشتريات",
+                total_lbl: "المجموع:", checkout_wa: "إرسال الطلب عبر واتساب", clear_cart: "إفراغ السلة",
+                admin_panel_title: "لوحة تحكم المالك", logout: "خروج",
+                sidebar_title: "ملفي الشخصي ومشترياتي", my_orders_title: "مشترياتي السابقة", support_wa: "تواصل مع خدمة الزبائن"
+            },
+            fr: {
+                track_btn: "Suivi", login_btn: "Compte",
+                hero_title: "Pièces et équipements auto d'origine au Maroc",
+                hero_subtitle: "Recherchez votre pièce et commandez directement sur WhatsApp.",
+                browse_btn: "Choisir ma voiture", compare_btn: "Comparer",
+                show_all: "Tout voir", all_models: "Tous",
+                available_parts: "Pièces disponibles", order_wa: "Commander", add_cart: "Ajouter",
+                no_results_msg: "Aucune pièce trouvée.", cart_title: "Panier",
+                total_lbl: "Total :", checkout_wa: "Commander sur WhatsApp", clear_cart: "Vider le panier",
+                admin_panel_title: "Administration", logout: "Déconnexion",
+                sidebar_title: "Mon Profil & Achats", my_orders_title: "Mes commandes passées", support_wa: "Service Client WhatsApp"
+            },
+            en: {
+                track_btn: "Track", login_btn: "Account",
+                hero_title: "Original Car Parts & Equipment in Morocco",
+                hero_subtitle: "Search for the part you need and order directly via WhatsApp.",
+                browse_btn: "Select Car", compare_btn: "Compare",
+                show_all: "Show All", all_models: "All",
+                available_parts: "Available Parts", order_wa: "Order via WhatsApp", add_cart: "Add to Cart",
+                no_results_msg: "No matching parts found.", cart_title: "Shopping Cart",
+                total_lbl: "Total:", checkout_wa: "Send via WhatsApp", clear_cart: "Clear Cart",
+                admin_panel_title: "Admin Panel", logout: "Logout",
+                sidebar_title: "My Profile & Orders", my_orders_title: "My Previous Orders", support_wa: "Customer Support"
+            }
+        };
+
+        const carModelBoxes = [
+            { id: "all", name: "الكل", sub: "Renault • Dacia • Nissan", icon: "fa-border-all", logo: null },
+            { id: "Megane", name: "Megane", sub: "Renault", icon: "fa-car", logo: null },
+            { id: "Clio", name: "Clio", sub: "Renault", icon: "fa-car-side", logo: null },
+            { id: "Kangoo", name: "Kangoo", sub: "Renault", icon: "fa-van-shuttle", logo: null },
+            { id: "Express", name: "Express", sub: "Renault", icon: "fa-truck-pickup", logo: null },
+            { id: "Symbol", name: "Symbol", sub: "Renault", icon: "fa-car", logo: null },
+            { id: "Dacia", name: "Dacia", sub: "Renault Group", icon: null, logo: "https://www.carlogos.org/car-logos/dacia-logo.png" },
+            { id: "Logan", name: "Logan", sub: "Dacia", icon: "fa-car", logo: null },
+            { id: "Sandero", name: "Sandero", sub: "Dacia", icon: "fa-car-side", logo: null },
+            { id: "Duster", name: "Duster", sub: "Dacia", icon: "fa-truck-monster", logo: null },
+            { id: "Dokker", name: "Dokker", sub: "Dacia", icon: "fa-van-shuttle", logo: null },
+            { id: "Lodgy", name: "Lodgy", sub: "Dacia", icon: "fa-shuttle-van", logo: null },
+            { id: "Nissan", name: "Nissan", sub: "Alliance", icon: null, logo: "https://www.carlogos.org/car-logos/nissan-logo.png" },
+            { id: "Qashqai", name: "Qashqai", sub: "Nissan", icon: "fa-car-side", logo: null },
+            { id: "Juke", name: "Juke", sub: "Nissan", icon: "fa-car", logo: null },
+            { id: "Micra", name: "Micra", sub: "Nissan", icon: "fa-car-side", logo: null },
+            { id: "Navara", name: "Navara", sub: "Nissan", icon: "fa-truck-pickup", logo: null },
+            { id: "X-Trail", name: "X-Trail", sub: "Nissan", icon: "fa-truck-monster", logo: null }
         ];
 
         const carModelsCatalog = {
@@ -441,175 +467,6 @@
         };
 
         const selectableProductModels = Object.keys(carModelsCatalog);
-
-        function detectDeviceAndBrowser() {
-            const ua = navigator.userAgent || "";
-            let deviceType = "جهاز كمبيوتر (PC)";
-
-            if (/iPhone/i.test(ua)) {
-                deviceType = "iPhone";
-            } else if (/iPad/i.test(ua)) {
-                deviceType = "iPad";
-            } else if (/Android/i.test(ua)) {
-                const samsungMatch = ua.match(/SM-[A-Z0-9]+|Galaxy\s?[A-Z0-9]+/i);
-                deviceType = samsungMatch ? `Samsung (${samsungMatch[0]})` : "Android / Samsung";
-            } else if (/Windows/i.test(ua)) {
-                deviceType = "Windows PC";
-            } else if (/Mac/i.test(ua)) {
-                deviceType = "Mac";
-            }
-
-            let browser = "متصفح";
-            if (/Edg/i.test(ua)) browser = "Edge";
-            else if (/OPR|Opera/i.test(ua)) browser = "Opera";
-            else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Browser";
-            else if (/CriOS|Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
-            else if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) browser = "Safari";
-            else if (/Firefox/i.test(ua)) browser = "Firefox";
-
-            return { deviceType, browser };
-        }
-
-        async function recordVisitToCloud(emailOverride = null, nameOverride = null) {
-            try {
-                const { deviceType, browser } = detectDeviceAndBrowser();
-                const userEmail = emailOverride || (currentUser && currentUser.email) || "";
-                const userName = nameOverride || (currentUser && currentUser.name) || "";
-
-                let visitorSessionId = sessionStorage.getItem("bmh_visitor_doc_id");
-                const nowIso = new Date().toISOString();
-
-                if (visitorSessionId && (userEmail || userName)) {
-                    await updateDoc(doc(db, "visitors", visitorSessionId), {
-                        userEmail,
-                        userName,
-                        updatedAt: nowIso
-                    });
-                } else if (!visitorSessionId) {
-                    const docRef = await addDoc(visitorsCol, {
-                        deviceType,
-                        browser,
-                        userEmail,
-                        userName,
-                        visitedAt: nowIso
-                    });
-                    sessionStorage.setItem("bmh_visitor_doc_id", docRef.id);
-                }
-
-                if (isAdmin) {
-                    await fetchVisitorsFromCloud();
-                }
-            } catch (err) {
-                console.error("تعذر تسجيل الزيارة:", err);
-            }
-        }
-
-        window.fetchVisitorsFromCloud = async function() {
-            const listEl = document.getElementById("admin-visitors-list");
-            if (!listEl) return;
-
-            try {
-                const snap = await getDocs(visitorsCol);
-                const items = [];
-                snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-                items.sort((a, b) => new Date(b.visitedAt || 0) - new Date(a.visitedAt || 0));
-
-                const todayStr = new Date().toISOString().slice(0, 10);
-                const totalCount = items.length;
-                const todayCount = items.filter(v => (v.visitedAt || "").startsWith(todayStr)).length;
-
-                document.getElementById("stat-total-visits").innerText = totalCount;
-                document.getElementById("stat-today-visits").innerText = todayCount;
-
-                if (items.length === 0) {
-                    listEl.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">لا توجد زيارات مسجلة بعد.</p>`;
-                    return;
-                }
-
-                listEl.innerHTML = items.slice(0, 30).map(v => {
-                    const isMobile = /iPhone|iPad|Android|Samsung/i.test(v.deviceType || "");
-                    const iconClass = isMobile ? "fa-mobile-screen-button text-emerald-500" : "fa-desktop text-blue-500";
-                    const timeFormatted = v.visitedAt ? new Date(v.visitedAt).toLocaleString("ar-MA", { dateStyle: "short", timeStyle: "short" }) : "";
-                    const identityBadge = v.userEmail
-                        ? `<span class="text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded block mt-0.5 truncate">${v.userEmail}</span>`
-                        : `<span class="text-[10px] text-slate-400 block mt-0.5">زائر بدون حساب</span>`;
-
-                    return `
-                        <div class="flex items-center justify-between gap-2 bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-xl p-2 text-xs">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                                    <i class="fa-solid ${iconClass} text-xs"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="font-bold text-slate-800 dark:text-slate-100 truncate text-[11px]">${v.deviceType || "جهاز"} <span class="text-[10px] font-normal text-slate-400">(${v.browser || ""})</span></p>
-                                    ${identityBadge}
-                                </div>
-                            </div>
-                            <span class="text-[9px] text-slate-400 font-bold shrink-0">${timeFormatted}</span>
-                        </div>
-                    `;
-                }).join("");
-            } catch (err) {
-                console.error("خطأ في جلب الزوار:", err);
-                listEl.innerHTML = `<p class="text-[11px] text-rose-500 text-center py-2">تعذر جلب سجل الزوار.</p>`;
-            }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            const sidebarVisitors = document.getElementById('sidebar-admin-visitors');
-            if (user) {
-                isAdmin = true;
-                document.getElementById('admin-panel').classList.remove('hidden');
-                if (sidebarVisitors) sidebarVisitors.classList.remove('hidden');
-                renderAdminSortList();
-                fetchVisitorsFromCloud();
-                filterProducts();
-            } else {
-                isAdmin = false;
-                document.getElementById('admin-panel').classList.add('hidden');
-                if (sidebarVisitors) sidebarVisitors.classList.add('hidden');
-                filterProducts();
-            }
-        });
-
-        const translations = {
-            ar: {
-                track_btn: "تتبع الطلب", login_btn: "حسابي",
-                hero_title: "معدات وقطع غيار السيارات",
-                hero_subtitle: "ابحث عن القطعة التي تحتاجها واطلبها مباشرة عبر واتساب بضغطة زر واحدة.",
-                browse_btn: "تصفح حسب السيارة", compare_btn: "مقارنة القطع",
-                show_all: "عرض الكل", all_models: "الكل",
-                available_parts: "القطع المتاحة", order_wa: "اطلب عبر واتساب", add_cart: "أضف للسلة",
-                no_results_msg: "لم نجد قطعاً مطابقة لبحثك.", cart_title: "سلة المشتريات",
-                total_lbl: "المجموع:", checkout_wa: "إرسال الطلب عبر واتساب", clear_cart: "إفراغ السلة",
-                admin_panel_title: "لوحة تحكم المالك", logout: "خروج",
-                sidebar_title: "ملفي الشخصي ومشترياتي", my_orders_title: "مشترياتي السابقة", support_wa: "تواصل مع خدمة الزبائن"
-            },
-            fr: {
-                track_btn: "Suivi", login_btn: "Compte",
-                hero_title: "Équipements et pièces auto",
-                hero_subtitle: "Recherchez votre pièce et commandez directement sur WhatsApp.",
-                browse_btn: "Choisir ma voiture", compare_btn: "Comparer",
-                show_all: "Tout voir", all_models: "Tous",
-                available_parts: "Pièces disponibles", order_wa: "Commander", add_cart: "Ajouter",
-                no_results_msg: "Aucune pièce trouvée.", cart_title: "Panier",
-                total_lbl: "Total :", checkout_wa: "Commander sur WhatsApp", clear_cart: "Vider le panier",
-                admin_panel_title: "Administration", logout: "Déconnexion",
-                sidebar_title: "Mon Profil & Achats", my_orders_title: "Mes commandes passées", support_wa: "Service Client WhatsApp"
-            },
-            en: {
-                track_btn: "Track", login_btn: "Account",
-                hero_title: "Auto Equipment & Car Parts",
-                hero_subtitle: "Search for the part you need and order directly via WhatsApp.",
-                browse_btn: "Select Car", compare_btn: "Compare",
-                show_all: "Show All", all_models: "All",
-                available_parts: "Available Parts", order_wa: "Order via WhatsApp", add_cart: "Add to Cart",
-                no_results_msg: "No matching parts found.", cart_title: "Shopping Cart",
-                total_lbl: "Total:", checkout_wa: "Send via WhatsApp", clear_cart: "Clear Cart",
-                admin_panel_title: "Admin Panel", logout: "Logout",
-                sidebar_title: "My Profile & Orders", my_orders_title: "My Previous Orders", support_wa: "Customer Support"
-            }
-        };
 
         function findCarForSubmodel(submodel) {
             for (const [carName, list] of Object.entries(carModelsCatalog)) {
@@ -1059,9 +916,6 @@
 
         window.openSideMenu = function() {
             renderSidebarContent();
-            if (isAdmin) {
-                fetchVisitorsFromCloud();
-            }
             document.getElementById('side-menu-overlay').classList.remove('hidden');
             const drawer = document.getElementById('side-menu-drawer');
             drawer.classList.remove('translate-x-full', '-translate-x-full');
@@ -1172,85 +1026,42 @@
                 if (translations[lang][key]) el.innerText = translations[lang][key];
             });
             renderSidebarContent();
-            renderBrandsStack();
+            renderModelBoxes();
             filterProducts();
         }
 
-        // عرض الشعارات الثلاثة واحد تحت واحد بخلفية رمادية فاتحة وشعار لكل علامة (بما فيها Nissan بشعاره)
-        function renderBrandsStack() {
-            const container = document.getElementById('brands-stack');
+        function renderModelBoxes() {
+            const container = document.getElementById('models-grid');
             if (!container) return;
 
-            container.innerHTML = brandGroupsData.map(brand => {
-                const isExpanded = activeBrandGroup === brand.id;
-                const activeCardStyle = isExpanded
-                    ? 'active border-amber-500'
-                    : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
+            container.innerHTML = carModelBoxes.map(box => {
+                const isActive = selectedModel === box.id ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-800 hover:border-amber-500';
+                const label = box.id === 'all' ? translations[currentLang].all_models : box.name;
 
-                const carsPanelHtml = isExpanded ? `
-                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2.5" onclick="event.stopPropagation()">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black text-amber-600 dark:text-amber-400">${brand.name}</span>
-                            <button type="button" onclick="selectCarInsideBrand('${brand.id}', 'all')" class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${selectedModel === 'all' ? 'bg-amber-500 text-slate-950' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}">
-                                ${translations[currentLang].all_models}
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-                            ${brand.cars.map(carName => {
-                                const isCarSelected = selectedModel === carName;
-                                return `
-                                    <button type="button" onclick="selectCarInsideBrand('${brand.id}', '${carName}')" class="model-box ${isCarSelected ? 'active border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-200 dark:border-slate-700 hover:border-amber-500'} bg-white dark:bg-slate-900 border rounded-xl py-2.5 px-3 text-xs font-black text-slate-900 dark:text-white shadow-sm transition cursor-pointer text-center">
-                                        ${carName}
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                ` : '';
+                const visual = box.logo
+                    ? `<img src="${box.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${box.name}" class="w-9 h-9 object-contain">`
+                    : `<div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center"><i class="fa-solid ${box.icon} text-base"></i></div>`;
 
                 return `
-                    <div onclick="toggleBrandGroup('${brand.id}')" class="brand-card ${activeCardStyle} bg-slate-100 dark:bg-slate-800/70 border rounded-2xl p-4 transition cursor-pointer">
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-slate-950 dark:bg-slate-900 border border-slate-700 flex items-center justify-center p-2.5 shrink-0 shadow">
-                                    <img src="${brand.logo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202926.png'" alt="${brand.name}" class="w-full h-full object-contain">
-                                </div>
-                                <h3 class="text-base md:text-lg font-black text-slate-900 dark:text-white">${brand.name}</h3>
-                            </div>
-                            <span class="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border dark:border-slate-700 flex items-center justify-center text-xs text-amber-500 shrink-0">
-                                <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
-                            </span>
-                        </div>
-                        ${carsPanelHtml}
-                    </div>
+                    <button type="button" onclick="selectModel('${box.id}')" class="model-box ${isActive} bg-slate-50 dark:bg-slate-800/70 border rounded-2xl p-3.5 flex flex-col items-center justify-center gap-1.5 shadow-sm transition cursor-pointer text-center">
+                        ${visual}
+                        <span class="text-sm font-black text-slate-900 dark:text-white">${label}</span>
+                        <span class="text-[10px] font-bold text-slate-400">${box.sub}</span>
+                    </button>
                 `;
             }).join('');
         }
 
-        window.toggleBrandGroup = function(brandId) {
-            if (activeBrandGroup === brandId) {
-                activeBrandGroup = null;
-                selectedModel = "all";
-            } else {
-                activeBrandGroup = brandId;
-                selectedModel = brandId;
-            }
-            renderBrandsStack();
-            filterProducts();
-        }
-
-        window.selectCarInsideBrand = function(brandId, carName) {
-            activeBrandGroup = brandId;
-            selectedModel = carName === "all" ? brandId : carName;
-            renderBrandsStack();
+        window.selectModel = function(modelId) {
+            selectedModel = modelId;
+            renderModelBoxes();
             filterProducts();
         }
 
         window.resetFilters = function() {
-            activeBrandGroup = null;
             selectedModel = "all";
             document.getElementById('search-input').value = "";
-            renderBrandsStack();
+            renderModelBoxes();
             filterProducts();
         }
 
@@ -1267,10 +1078,7 @@
                         pSubmodels.some(sub => sub.toLowerCase().includes(selectedModel.toLowerCase())) ||
                         (p.desc && p.desc.toLowerCase().includes(selectedModel.toLowerCase()));
 
-                    if (selectedModel === 'Renault') {
-                        const renaultList = ["Megane", "Clio", "Kangoo", "Express", "Symbol"];
-                        matchModel = matchesCarBox || pCars.some(m => renaultList.includes(m)) || pSubmodels.some(sub => renaultList.some(r => sub.toLowerCase().includes(r.toLowerCase())));
-                    } else if (selectedModel === 'Dacia') {
+                    if (selectedModel === 'Dacia') {
                         const daciaList = ["Dacia", "Logan", "Sandero", "Duster", "Dokker", "Lodgy"];
                         const matchesDaciaGroup =
                             pCars.some(m => daciaList.includes(m)) ||
@@ -1462,24 +1270,23 @@
             document.getElementById('tab-login').className = t === 'login' ? "w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm" : "w-1/2 py-2 font-bold text-slate-400 text-sm";
             document.getElementById('tab-register').className = t !== 'login' ? "w-1/2 py-2 font-bold border-b-2 border-amber-500 text-sm" : "w-1/2 py-2 font-bold text-slate-400 text-sm";
         }
-        window.handleCustomerLogin = async function(e) {
+        window.handleCustomerLogin = function(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
+            const email = document.getElementById('login-email').value;
             currentUser = { name: email.split('@')[0], email: email };
             localStorage.setItem('auto_current_user', JSON.stringify(currentUser));
             renderSidebarContent();
-            await recordVisitToCloud(email, currentUser.name);
             alert('مرحباً بك في حسابك!');
             closeCustomerModal();
         }
-        window.handleCustomerRegister = async function(e) {
+        window.handleCustomerRegister = function(e) {
             e.preventDefault();
-            const nameVal = document.getElementById('reg-name').value.trim();
-            const emailVal = document.getElementById('reg-email').value.trim();
-            currentUser = { name: nameVal, email: emailVal };
+            currentUser = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value
+            };
             localStorage.setItem('auto_current_user', JSON.stringify(currentUser));
             renderSidebarContent();
-            await recordVisitToCloud(emailVal, nameVal);
             alert('تم إنشاء حسابك وحفظه بنجاح!');
             closeCustomerModal();
         }
@@ -1670,8 +1477,7 @@
 
         renderModelCheckboxesInForm([], {});
         renderSidebarContent();
-        renderBrandsStack();
-        recordVisitToCloud();
+        renderModelBoxes();
         fetchProductsFromCloud();
     </script>
 </body>
